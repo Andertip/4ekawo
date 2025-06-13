@@ -820,8 +820,7 @@
 
         setInterval(updateClock, 1000);
         updateClock();
-    </script>
-    // Серверная часть (пример на Node.js)
+    </script    // Серверная часть (пример на Node.js)
 app.post('/generate-code', (req, res) => {
     const userId = req.body.userId;
     const code = Math.floor(1000 + Math.random() * 9000); // 4-значный код
