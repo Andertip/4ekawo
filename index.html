@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Оператор ПВЗ</title>
+    <title>Главный экран ПВЗ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Все стили из последнего дизайна (компактная версия) */
         * {
             margin: 0;
             padding: 0;
@@ -20,8 +19,6 @@
             color: white;
             position: relative;
             overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
         }
         
         body::before {
@@ -36,7 +33,6 @@
             border-radius: 30px;
         }
         
-        /* Верхняя панель */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -71,7 +67,6 @@
             background: rgba(255,255,255,0.2);
         }
         
-        /* Стиль стеклянных карточек */
         .glass-card {
             background: rgba(173, 216, 230, 0.25);
             backdrop-filter: blur(10px);
@@ -83,7 +78,6 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         
-        /* Календарь (уменьшенный) */
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -132,7 +126,6 @@
             background: rgba(255, 255, 255, 0.3);
         }
         
-        /* Доска объявлений */
         .notice-board {
             background: #1a5e25;
             border: 3px solid #5d4037;
@@ -181,7 +174,6 @@
             font-weight: bold;
         }
         
-        /* Часы */
         .clock-widget {
             display: flex;
             flex-direction: column;
@@ -204,7 +196,6 @@
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         
-        /* Кнопки действий (6 штук) */
         .actions-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -233,7 +224,6 @@
             overflow: hidden;
         }
         
-        /* Глянцевый эффект с бликами */
         .action-btn::before {
             content: '';
             position: absolute;
@@ -270,7 +260,6 @@
             z-index: 2;
         }
         
-        /* Контейнер для календаря и кнопок */
         .top-container {
             display: flex;
             gap: 15px;
@@ -335,13 +324,11 @@
     </style>
 </head>
 <body>
-    <!-- Верхняя панель -->
     <div class="top-bar">
         <div class="user-info">Оператор ПВЗ: Иван Иванов</div>
         <button class="logout-btn">🚪</button>
     </div>
     
-    <!-- Горизонтальный контейнер для календаря и кнопок -->
     <div class="top-container">
         <div class="calendar-container glass-card">
             <div class="calendar">
@@ -354,7 +341,6 @@
                 <div class="day-name">Сб</div>
                 <div class="day-name">Вс</div>
                 
-                <!-- Пример дней календаря -->
                 <div class="day">27</div>
                 <div class="day">28</div>
                 <div class="day">29</div>
@@ -389,20 +375,18 @@
             </div>
         </div>
         
-        <!-- Дополнительные кнопки справа от календаря -->
         <div class="side-buttons">
-            <button class="side-btn">
+            <button class="side-btn" onclick="location.href='sos.html'">
                 🆘
                 <span class="side-btn-label">SOS</span>
             </button>
-            <button class="side-btn">
+            <button class="side-btn" onclick="location.href='reports.html'">
                 📈
                 <span class="side-btn-label">Отчёты</span>
             </button>
         </div>
     </div>
     
-    <!-- Доска объявлений -->
     <div class="glass-card">
         <div class="notice-board">
             <div class="notice-title">Важные объявления</div>
@@ -415,7 +399,6 @@
         </div>
     </div>
     
-    <!-- Часы -->
     <div class="glass-card">
         <div class="clock-widget">
             <div class="clock-display" id="clock">10:45:27</div>
@@ -423,67 +406,111 @@
         </div>
     </div>
     
-    <!-- Кнопки действий (6 штук) -->
     <div class="actions-grid">
         <button class="action-btn" id="checkinBtn">
             📍
             <span class="action-label">На пункте</span>
         </button>
         
-        <button class="action-btn">
+        <button class="action-btn" onclick="location.href='chat.html'">
             💬
             <span class="action-label">Чат</span>
         </button>
         
-        <button class="action-btn">
+        <button class="action-btn" onclick="location.href='help.html'">
             ❓
             <span class="action-label">Помощь</span>
         </button>
         
-        <button class="action-btn">
+        <button class="action-btn" onclick="location.href='supplies.html'">
             📦
             <span class="action-label">Расходники</span>
         </button>
         
-        <button class="action-btn">
+        <button class="action-btn" onclick="location.href='team.html'">
             👥
             <span class="action-label">Команда</span>
         </button>
         
-        <button class="action-btn">
+        <button class="action-btn" onclick="location.href='settings.html'">
             ⚙️
             <span class="action-label">Настройки</span>
         </button>
     </div>
 
     <script>
-        // Глобальные переменные
-        let currentPVZ = "Ozon-15 (ул. Центральная, 5)";
-        let shiftEndTime = "18:00";
-        let isCheckedIn = false;
-        let teamContacts = [
-            {name: "Алексей (сменщик)", phone: "+79151112233", telegram: "@alexey_pvz"},
-            {name: "Марина (управляющая)", phone: "+79252223344", telegram: "@marina_manager"},
-            {name: "Сергей (директор)", phone: "+79353334455", telegram: "@director_sergey"}
-        ];
-
-        // Инициализация приложения
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
-
-        // 1. Информация об операторе
-        document.querySelector('.user-info').addEventListener('click', function() {
-            const shiftStart = "08:00";
-            const message = `⏱ Работает с: ${shiftStart}\n📍 ПВЗ: ${currentPVZ}`;
-            
-            Telegram.WebApp.showPopup({
-                title: 'Информация об операторе',
-                message: message,
-                buttons: [{type: 'ok'}]
+        
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('ru-RU');
+            const date = now.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
             });
+            
+            document.getElementById('clock').textContent = time;
+            document.getElementById('date').textContent = date;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        const checkinBtn = document.getElementById('checkinBtn');
+        let isCheckedIn = false;
+        
+        checkinBtn.addEventListener('click', function() {
+            if (!isCheckedIn) {
+                Telegram.WebApp.showPopup({
+                    title: 'Подтверждение',
+                    message: 'Разрешить доступ к вашему местоположению для отметки?',
+                    buttons: [
+                        {id: 'yes', type: 'default', text: '✅ Разрешить'},
+                        {id: 'no', type: 'destructive', text: '❌ Отмена'}
+                    ]
+                }, function(btnId) {
+                    if(btnId === 'yes') {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                isCheckedIn = true;
+                                checkinBtn.classList.add('active');
+                                checkinBtn.querySelector('.action-label').textContent = 'Закрыть';
+                                Telegram.WebApp.showAlert('Вы успешно отметились на пункте!');
+                            },
+                            function(error) {
+                                Telegram.WebApp.showAlert('Ошибка: ' + error.message);
+                            }
+                        );
+                    }
+                });
+            } else {
+                Telegram.WebApp.showPopup({
+                    title: 'Завершение смены',
+                    message: 'Вы действительно хотите закрыть пункт?',
+                    buttons: [
+                        {id: 'yes', type: 'destructive', text: '✅ Да, закрыть'},
+                        {id: 'no', type: 'default', text: '❌ Отмена'}
+                    ]
+                }, function(btnId) {
+                    if(btnId === 'yes') {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                isCheckedIn = false;
+                                checkinBtn.classList.remove('active');
+                                checkinBtn.querySelector('.action-label').textContent = 'На пункте';
+                                Telegram.WebApp.showAlert('Пункт успешно закрыт! Хорошего отдыха!');
+                            },
+                            function(error) {
+                                Telegram.WebApp.showAlert('Ошибка: ' + error.message);
+                            }
+                        );
+                    }
+                });
+            }
         });
-
-        // 2. Выход из системы
+        
         document.querySelector('.logout-btn').addEventListener('click', function() {
             Telegram.WebApp.showPopup({
                 title: 'Подтверждение выхода',
@@ -494,7 +521,6 @@
                 ]
             }, function(btnId) {
                 if(btnId === 'yes') {
-                    // Переход на экран блокировки
                     document.body.innerHTML = `
                         <div style="text-align:center;padding:50px 20px">
                             <h1>🚪 Вы вышли из системы</h1>
@@ -510,328 +536,15 @@
                 }
             });
         });
-
-        // 3. Календарь (переход в расширенный вид)
-        document.querySelector('.calendar-container').addEventListener('click', function() {
-            // Здесь будет реализация расширенного календаря
-            Telegram.WebApp.showAlert('Переход в расширенный календарь');
-        });
-
-        // 4. Кнопка SOS
-        document.querySelector('.side-buttons .side-btn:nth-child(1)').addEventListener('click', function() {
-            Telegram.WebApp.showPopup({
-                title: 'SOS!',
-                message: 'Отправить сигнал тревоги?',
-                buttons: [
-                    {id: 'yes', type: 'destructive', text: 'Отправить SOS'},
-                    {id: 'no', type: 'cancel'}
-                ]
-            }, function(btnId) {
-                if(btnId === 'yes') {
-                    // Отправка уведомления управляющим (реальная реализация требует сервера)
-                    const message = `🚨 SOS! Кнопка нажата оператором на ПВЗ: ${currentPVZ}`;
-                    Telegram.WebApp.sendData(message);
-                    Telegram.WebApp.showAlert('Сигнал SOS отправлен управляющим!');
-                }
-            });
-        });
-
-        // 5. Отчёты
-        document.querySelector('.side-buttons .side-btn:nth-child(2)').addEventListener('click', function() {
-            // Реализация таблиц отчетов
-            const reportsHTML = `
-                <div class="glass-card">
-                    <h3>Ежедневный отчёт</h3>
-                    <table style="width:100%; border-collapse:collapse; margin-top:15px">
-                        <tr><th>Показатель</th><th>Значение</th></tr>
-                        <tr><td>Клиентов</td><td><input type="number" value="42"></td></tr>
-                        <tr><td>Возвратов</td><td><input type="number" value="3"></td></tr>
-                        <tr><td>Проблемы</td><td><textarea rows="2">Нет сканера</textarea></td></tr>
-                    </table>
-                    <button style="margin-top:15px; padding:10px 20px; background:#4CAF50; color:white; border:none; border-radius:10px">
-                        Отправить
-                    </button>
-                </div>
-            `;
-            
-            // Заменяем содержимое доски объявлений на форму отчета
-            document.querySelector('.notice-board').innerHTML = reportsHTML;
-        });
-
-        // 6. Часы (оставшееся время)
-        document.querySelector('.clock-widget').addEventListener('click', function() {
-            const now = new Date();
-            const endTime = new Date();
-            const [hours, minutes] = shiftEndTime.split(':');
-            endTime.setHours(hours, minutes, 0, 0);
-            
-            const diffMs = endTime - now;
-            const diffHrs = Math.floor(diffMs / 3600000);
-            const diffMins = Math.floor((diffMs % 3600000) / 60000);
-            
-            Telegram.WebApp.showAlert(`До конца смены: ${diffHrs} ч. ${diffMins} мин.`);
-        });
-
-        // 7. Кнопка "На пункте/Закрыть"
-        const checkinBtn = document.getElementById('checkinBtn');
-        checkinBtn.addEventListener('click', function() {
-            if (!isCheckedIn) {
-                // Запрос геолокации
-                Telegram.WebApp.showPopup({
-                    title: 'Открытие пункта',
-                    message: 'Подтвердите ваше местоположение',
-                    buttons: [
-                        {id: 'yes', type: 'default', text: '✅ Подтвердить'},
-                        {id: 'no', type: 'destructive', text: '❌ Отмена'}
-                    ]
-                }, function(btnId) {
-                    if(btnId === 'yes') {
-                        navigator.geolocation.getCurrentPosition(
-                            function(position) {
-                                isCheckedIn = true;
-                                checkinBtn.classList.add('active');
-                                checkinBtn.querySelector('.action-label').textContent = 'Закрыть';
-                                
-                                // Отправка адреса ПВЗ (в реальности - преобразование координат в адрес)
-                                const message = `✅ Пункт ${currentPVZ} открыт`;
-                                Telegram.WebApp.sendData(message);
-                                
-                                Telegram.WebApp.showAlert(message);
-                            },
-                            function(error) {
-                                Telegram.WebApp.showAlert('Ошибка: ' + error.message);
-                            }
-                        );
-                    }
-                });
-            } else {
-                // Запрос на завершение смены
-                Telegram.WebApp.showPopup({
-                    title: 'Закрытие пункта',
-                    message: 'Подтвердите закрытие смены',
-                    buttons: [
-                        {id: 'yes', type: 'destructive', text: '✅ Закрыть пункт'},
-                        {id: 'no', type: 'default', text: '❌ Отмена'}
-                    ]
-                }, function(btnId) {
-                    if(btnId === 'yes') {
-                        navigator.geolocation.getCurrentPosition(
-                            function(position) {
-                                isCheckedIn = false;
-                                checkinBtn.classList.remove('active');
-                                checkinBtn.querySelector('.action-label').textContent = 'На пункте';
-                                
-                                const message = `❌ Пункт ${currentPVZ} закрыт`;
-                                Telegram.WebApp.sendData(message);
-                                
-                                Telegram.WebApp.showAlert('Пункт успешно закрыт!');
-                            },
-                            function(error) {
-                                Telegram.WebApp.showAlert('Ошибка: ' + error.message);
-                            }
-                        );
-                    }
-                });
-            }
-        });
-
-        // 8. Кнопка "Помощь"
-        document.querySelectorAll('.action-btn')[2].addEventListener('click', function() {
-            const helpContent = `
-                <div class="glass-card">
-                    <h3>📚 База знаний</h3>
-                    <div style="margin-top:15px">
-                        <button class="help-section">Юридическая информация</button>
-                        <button class="help-section">Обучение</button>
-                        <button class="help-section">Контакты руководства</button>
-                        <button class="help-section">Частые вопросы</button>
-                    </div>
-                    
-                    <div id="help-details" style="margin-top:20px"></div>
-                </div>
-            `;
-            
-            document.querySelector('.notice-board').innerHTML = helpContent;
-            
-            // Обработка разделов помощи
-            document.querySelectorAll('.help-section').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const section = this.textContent;
-                    let content = '';
-                    
-                    switch(section) {
-                        case 'Юридическая информация':
-                            content = `<p><b>ООО "ПВЗ Сервис"</b><br>ИНН 1234567890<br>г. Москва, ул. Центральная, 1</p>`;
-                            break;
-                        case 'Обучение':
-                            content = `<p><a href="#">Инструкция по работе с системой</a><br>
-                                       <a href="#">Видео-курс для новичков</a><br>
-                                       <a href="#">Тесты для самопроверки</a></p>`;
-                            break;
-                        case 'Контакты руководства':
-                            content = `<p>Директор: Сергей Петров +7(999)123-45-67<br>
-                                       Управляющая: Марина Сидорова +7(999)765-43-21<br>
-                                       Техподдержка: support@pvz.ru</p>`;
-                            break;
-                        case 'Частые вопросы':
-                            content = `<p><b>Q:</b> Что делать если не сканируется штрихкод?<br>
-                                       <b>A:</b> Ввести вручную или оформить как "без штрихкода"</p>
-                                       <p><b>Q:</b> Клиент требует возврат без чека?<br>
-                                       <b>A:</b> Только при наличии паспорта и заполнении формы</p>`;
-                            break;
-                    }
-                    
-                    document.getElementById('help-details').innerHTML = content;
-                });
-            });
-        });
-
-        // 9. Кнопка "Чат"
-        document.querySelectorAll('.action-btn')[1].addEventListener('click', function() {
-            Telegram.WebApp.showPopup({
-                title: 'Выберите чат',
-                message: 'Доступные рабочие чаты:',
-                buttons: [
-                    {id: 'all', text: 'Все ПВЗ'},
-                    {id: 'ozon', text: 'Только Ozon'},
-                    {id: 'wb', text: 'Только Wildberries'},
-                    {id: 'pvz15', text: 'ПВЗ-15 (наш)'},
-                    {type: 'cancel'}
-                ]
-            }, function(btnId) {
-                if(btnId && btnId !== 'cancel') {
-                    // Открываем выбранный чат
-                    const chatMap = {
-                        'all': 'https://t.me/all_pvz_chat',
-                        'ozon': 'https://t.me/ozon_pvz_chat',
-                        'wb': 'https://t.me/wb_pvz_chat',
-                        'pvz15': 'https://t.me/pvz15_chat'
-                    };
-                    
-                    Telegram.WebApp.openTelegramLink(chatMap[btnId]);
-                }
-            });
-        });
-
-        // 10. Кнопка "Расходники"
-        document.querySelectorAll('.action-btn')[3].addEventListener('click', function() {
-            const suppliesHTML = `
-                <div class="glass-card">
-                    <h3>🛒 Запрос расходников</h3>
-                    <select id="supply-item" style="width:100%; padding:10px; margin:10px 0; border-radius:10px">
-                        <option>Пакеты (30x40 см)</option>
-                        <option>Скотч упаковочный</option>
-                        <option>Маркеры</option>
-                        <option>Наклейки "Хрупкое"</option>
-                        <option>Ножницы</option>
-                    </select>
-                    
-                    <input type="number" min="1" value="1" 
-                        style="width:100%; padding:10px; margin:10px 0; border-radius:10px">
-                    
-                    <button onclick="requestSupply()" 
-                        style="padding:10px 20px; background:#4CAF50; color:white; border:none; border-radius:10px; width:100%">
-                        Запросить
-                    </button>
-                </div>
-            `;
-            
-            document.querySelector('.notice-board').innerHTML = suppliesHTML;
-        });
-
-        // 11. Кнопка "Команда"
-        document.querySelectorAll('.action-btn')[4].addEventListener('click', function() {
-            let contactsHTML = '<div class="glass-card"><h3>👥 Команда</h3>';
-            
-            teamContacts.forEach(contact => {
-                contactsHTML += `
-                    <div style="margin:15px 0; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.2)">
-                        <b>${contact.name}</b>
-                        <div style="display:flex; margin-top:10px">
-                            <a href="tel:${contact.phone}" style="flex:1; text-align:center; color:white">
-                                📞 Звонок
-                            </a>
-                            <a href="https://t.me/${contact.telegram.replace('@', '')}" 
-                               style="flex:1; text-align:center; color:white">
-                                ✉️ Telegram
-                            </a>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            contactsHTML += '</div>';
-            document.querySelector('.notice-board').innerHTML = contactsHTML;
-        });
-
-        // 12. Кнопка "Настройки" - Фотоотчёт
-        document.querySelectorAll('.action-btn')[5].addEventListener('click', function() {
-            Telegram.WebApp.showPopup({
-                title: 'Фотоотчёт',
-                message: 'Сделайте фото состояния пункта',
-                buttons: [
-                    {id: 'camera', text: '📷 Сделать фото'},
-                    {id: 'gallery', text: '📁 Выбрать из галереи'},
-                    {type: 'cancel'}
-                ]
-            }, function(btnId) {
-                if(btnId === 'camera') {
-                    // Открытие камеры
-                    Telegram.WebApp.openCamera();
-                } else if(btnId === 'gallery') {
-                    // Открытие галереи
-                    Telegram.WebApp.openGallery();
-                }
-            });
-        });
-
-        // Вспомогательные функции
-        window.requestSupply = function() {
-            const item = document.getElementById('supply-item').value;
-            const quantity = document.querySelector('input[type="number"]').value;
-            
-            const message = `🛒 Запрос расходников: ${item} x${quantity} для ${currentPVZ}`;
-            Telegram.WebApp.sendData(message);
-            Telegram.WebApp.showAlert('Запрос отправлен управляющему!');
-        }
-
+        
         window.checkAccessCode = function() {
             const code = document.getElementById('accessCode').value;
-            if(code === "2024") { // В реальности проверка на сервере
-                location.reload(); // Возврат в систему
+            if(code === "2024") {
+                location.reload();
             } else {
                 Telegram.WebApp.showAlert('Неверный код доступа!');
             }
         }
-
-        // Обновление часов в реальном времени
-        function updateClock() {
-            const now = new Date();
-            const time = now.toLocaleTimeString('ru-RU');
-            const date = now.toLocaleDateString('ru-RU', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            
-            document.getElementById('clock').textContent = time;
-            document.getElementById('date').textContent = date;
-        }
-
-        setInterval(updateClock, 1000);
-        updateClock();
-    </script    // Серверная часть (пример на Node.js)
-app.post('/generate-code', (req, res) => {
-    const userId = req.body.userId;
-    const code = Math.floor(1000 + Math.random() * 9000); // 4-значный код
-    
-    // Сохраняем код в базе данных с привязкой к пользователю
-    db.query('INSERT INTO access_codes (user_id, code) VALUES (?, ?)', [userId, code]);
-    
-    // Отправляем код администратору через Telegram бота
-    bot.sendMessage(adminChatId, `Код доступа для пользователя ${userId}: ${code}`);
-    
-    res.send({status: 'success'});
-});
+    </script>
 </body>
 </html>
