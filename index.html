@@ -15,10 +15,12 @@
         body {
             background: linear-gradient(135deg, #ff00ff 0%, #3300ff 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
             color: white;
             position: relative;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         body::before {
@@ -38,14 +40,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
-            margin-bottom: 20px;
+            padding: 12px 0;
+            margin-bottom: 15px;
         }
         
         .user-info {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 500;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            max-width: 70%;
         }
         
         .logout-btn {
@@ -54,8 +57,8 @@
             color: white;
             font-size: 24px;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -74,51 +77,52 @@
             -webkit-backdrop-filter: blur(10px);
             border-radius: 20px;
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 20px;
-            margin-bottom: 25px;
+            padding: 15px;
+            margin-bottom: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         
-        /* Календарь */
+        /* Календарь (уменьшенный) */
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            gap: 5px;
         }
         
         .calendar-header {
             grid-column: span 7;
             text-align: center;
             font-weight: 600;
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 18px;
+            margin-bottom: 8px;
             color: white;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         
         .day-name {
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
             opacity: 0.8;
-            padding: 5px 0;
+            padding: 4px 0;
         }
         
         .day {
             text-align: center;
-            padding: 12px 0;
+            padding: 8px 0;
             border-radius: 50%;
             font-weight: 500;
+            font-size: 14px;
             position: relative;
         }
         
         .day.workday::after {
             content: '';
             position: absolute;
-            bottom: 5px;
+            bottom: 2px;
             left: 50%;
             transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background: #00ff00;
             border-radius: 50%;
         }
@@ -132,10 +136,10 @@
             background: #1a5e25;
             border: 3px solid #5d4037;
             border-radius: 10px;
-            padding: 15px;
+            padding: 12px;
             position: relative;
             font-family: 'Chalkboard', 'Comic Sans MS', cursive;
-            min-height: 150px;
+            min-height: 120px;
         }
         
         .notice-board::before {
@@ -147,8 +151,8 @@
             bottom: 0;
             background: repeating-linear-gradient(
                 transparent,
-                transparent 20px,
-                rgba(0,0,0,0.1) 22px
+                transparent 18px,
+                rgba(0,0,0,0.1) 20px
             );
             pointer-events: none;
             border-radius: 7px;
@@ -156,8 +160,8 @@
         
         .notice-title {
             text-align: center;
-            font-size: 22px;
-            margin-bottom: 15px;
+            font-size: 18px;
+            margin-bottom: 10px;
             color: #ff5555;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -165,8 +169,8 @@
         }
         
         .notice-content {
-            font-size: 18px;
-            line-height: 1.5;
+            font-size: 16px;
+            line-height: 1.4;
             color: white;
             text-shadow: 1px 1px 0 #000;
         }
@@ -181,37 +185,37 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 0;
+            padding: 15px 0;
         }
         
         .clock-display {
-            font-size: 48px;
+            font-size: 40px;
             font-weight: 700;
             letter-spacing: 2px;
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-family: 'Digital', monospace;
         }
         
         .date-display {
-            font-size: 18px;
+            font-size: 16px;
             opacity: 0.9;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         
-        /* Кнопки действий */
+        /* Кнопки действий (6 штук) */
         .actions-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
         }
         
         .action-btn {
             background: linear-gradient(145deg, #6a5acd, #9370db);
             border: none;
-            border-radius: 18px;
-            padding: 25px 15px;
+            border-radius: 16px;
+            padding: 20px 10px;
             color: white;
             font-size: 24px;
             cursor: pointer;
@@ -225,6 +229,24 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+        }
+        
+        /* Глянцевый эффект с бликами */
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255,255,255,0.3), 
+                rgba(255,255,255,0.1) 20%,
+                transparent
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
         }
         
         .action-btn:active {
@@ -240,10 +262,74 @@
         }
         
         .action-label {
-            font-size: 14px;
-            margin-top: 10px;
+            font-size: 12px;
+            margin-top: 8px;
             font-weight: 500;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        
+        /* Контейнер для календаря и кнопок */
+        .top-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-container {
+            flex: 2;
+        }
+        
+        .side-buttons {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .side-btn {
+            background: linear-gradient(145deg, #48c774, #00d1b2);
+            border: none;
+            border-radius: 16px;
+            padding: 15px 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.2),
+                inset 0 -4px 8px rgba(0,0,0,0.3),
+                inset 0 4px 8px rgba(255,255,255,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .side-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255,255,255,0.3), 
+                rgba(255,255,255,0.1) 20%,
+                transparent
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
+        .side-btn-label {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
         }
     </style>
 </head>
@@ -254,58 +340,64 @@
         <button class="logout-btn">🚪</button>
     </div>
     
-    <!-- Календарь -->
-    <div class="glass-card">
-        <div class="calendar">
-            <div class="calendar-header">Июнь 2024</div>
-            <div class="day-name">Пн</div>
-            <div class="day-name">Вт</div>
-            <div class="day-name">Ср</div>
-            <div class="day-name">Чт</div>
-            <div class="day-name">Пт</div>
-            <div class="day-name">Сб</div>
-            <div class="day-name">Вс</div>
-            
-            <!-- Пример дней календаря -->
-            <div class="day">27</div>
-            <div class="day">28</div>
-            <div class="day">29</div>
-            <div class="day">30</div>
-            <div class="day">31</div>
-            <div class="day">1</div>
-            <div class="day">2</div>
-            
-            <div class="day workday">3</div>
-            <div class="day workday">4</div>
-            <div class="day workday">5</div>
-            <div class="day workday">6</div>
-            <div class="day workday">7</div>
-            <div class="day">8</div>
-            <div class="day">9</div>
-            
-            <div class="day workday">10</div>
-            <div class="day workday">11</div>
-            <div class="day workday">12</div>
-            <div class="day workday">13</div>
-            <div class="day workday">14</div>
-            <div class="day">15</div>
-            <div class="day">16</div>
-            
-            <div class="day workday">17</div>
-            <div class="day workday">18</div>
-            <div class="day workday">19</div>
-            <div class="day workday">20</div>
-            <div class="day workday">21</div>
-            <div class="day">22</div>
-            <div class="day">23</div>
-            
-            <div class="day workday">24</div>
-            <div class="day workday">25</div>
-            <div class="day workday current">26</div>
-            <div class="day workday">27</div>
-            <div class="day workday">28</div>
-            <div class="day">29</div>
-            <div class="day">30</div>
+    <!-- Горизонтальный контейнер для календаря и кнопок -->
+    <div class="top-container">
+        <div class="calendar-container glass-card">
+            <div class="calendar">
+                <div class="calendar-header">Июнь 2024</div>
+                <div class="day-name">Пн</div>
+                <div class="day-name">Вт</div>
+                <div class="day-name">Ср</div>
+                <div class="day-name">Чт</div>
+                <div class="day-name">Пт</div>
+                <div class="day-name">Сб</div>
+                <div class="day-name">Вс</div>
+                
+                <!-- Пример дней календаря -->
+                <div class="day">27</div>
+                <div class="day">28</div>
+                <div class="day">29</div>
+                <div class="day">30</div>
+                <div class="day">31</div>
+                <div class="day">1</div>
+                <div class="day">2</div>
+                
+                <div class="day workday">3</div>
+                <div class="day workday">4</div>
+                <div class="day workday">5</div>
+                <div class="day workday">6</div>
+                <div class="day workday">7</div>
+                <div class="day">8</div>
+                <div class="day">9</div>
+                
+                <div class="day workday">10</div>
+                <div class="day workday">11</div>
+                <div class="day workday">12</div>
+                <div class="day workday">13</div>
+                <div class="day workday">14</div>
+                <div class="day">15</div>
+                <div class="day">16</div>
+                
+                <div class="day workday">17</div>
+                <div class="day workday">18</div>
+                <div class="day workday current">19</div>
+                <div class="day workday">20</div>
+                <div class="day workday">21</div>
+                <div class="day">22</div>
+                <div class="day">23</div>
+            </div>
+        </div>
+        
+        <!-- Дополнительные кнопки справа от календаря -->
+        <div class="side-buttons">
+            <button class="side-btn">
+                🆘
+                <span class="side-btn-label">SOS</span>
+            </button>
+            <button class="side-btn">
+                📈
+                <span class="side-btn-label">Отчёты</span>
+            </button>
         </div>
     </div>
     
@@ -330,7 +422,7 @@
         </div>
     </div>
     
-    <!-- Кнопки действий -->
+    <!-- Кнопки действий (6 штук) -->
     <div class="actions-grid">
         <button class="action-btn" id="checkinBtn">
             📍
@@ -350,6 +442,16 @@
         <button class="action-btn">
             📦
             <span class="action-label">Расходники</span>
+        </button>
+        
+        <button class="action-btn">
+            👥
+            <span class="action-label">Команда</span>
+        </button>
+        
+        <button class="action-btn">
+            ⚙️
+            <span class="action-label">Настройки</span>
         </button>
     </div>
 
@@ -432,7 +534,7 @@
         });
         
         // Эффект нажатия для всех кнопок
-        document.querySelectorAll('.action-btn').forEach(btn => {
+        document.querySelectorAll('.action-btn, .side-btn').forEach(btn => {
             btn.addEventListener('mousedown', () => {
                 btn.style.transform = 'translateY(4px)';
                 btn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
