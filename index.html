@@ -821,5 +821,18 @@
         setInterval(updateClock, 1000);
         updateClock();
     </script>
+    // Серверная часть (пример на Node.js)
+app.post('/generate-code', (req, res) => {
+    const userId = req.body.userId;
+    const code = Math.floor(1000 + Math.random() * 9000); // 4-значный код
+    
+    // Сохраняем код в базе данных с привязкой к пользователю
+    db.query('INSERT INTO access_codes (user_id, code) VALUES (?, ?)', [userId, code]);
+    
+    // Отправляем код администратору через Telegram бота
+    bot.sendMessage(adminChatId, `Код доступа для пользователя ${userId}: ${code}`);
+    
+    res.send({status: 'success'});
+});
 </body>
 </html>
