@@ -1,1 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PVZ Control PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --primary: #2E86C1;  /* Синий */
+            --accent: #E74C3C;   /* Красный */
+            --light: #FDFEFE;    /* Белый */
+        }
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        body {
+            background: #f8f9fa;
+            margin: 0;
+            padding: 15px;
+            color: #34495e;
+        }
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+        }
+        .btn-alert {
+            background: var(--accent);
+            color: white;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .tab-bar {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        .tab-item.active {
+            color: var(--primary);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        Управление ПВЗ
+    </div>
+    
+    <div class="card">
+        <button class="btn btn-primary" onclick="checkIn()">📍 Отметиться</button>
+        <button class="btn">📦 Расходники</button>
+        <button class="btn">👥 Моя смена</button>
+        <button class="btn btn-alert">🚨 SOS</button>
+    </div>
+    
+    <div class="card">
+        <h3>Статус ПВЗ</h3>
+        <p>✅ Ozon-15: все сотрудники на месте</p>
+        <p>⚠️ WB-7: 2 сотрудника опаздывают</p>
+    </div>
 
+    <div class="tab-bar">
+        <div class="tab-item active">Главная</div>
+        <div class="tab-item">Отчеты</div>
+        <div class="tab-item">Чат</div>
+        <div class="tab-item">Настройки</div>
+    </div>
+
+    <script>
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        
+        function checkIn() {
+            Telegram.WebApp.showPopup({
+                title: 'Подтверждение',
+                message: 'Включить геолокацию для отметки?',
+                buttons: [
+                    {id: 'yes', type: 'ok'},
+                    {id: 'no', type: 'cancel'}
+                ]
+            }, function(btnId) {
+                if(btnId === 'yes') {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => alert('Отметка успешна! Координаты: ' + pos.coords.latitude + ', ' + pos.coords.longitude),
+                        err => alert('Ошибка: ' + err.message)
+                    );
+                }
+            });
+        }
+    </script>
+</body>
+</html>
