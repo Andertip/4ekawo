@@ -1208,5 +1208,213 @@
         // Запуск приложения после полной загрузки страницы
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Главный экран ПВЗ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff00ff 0%, #3300ff 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* ... (остальные стили остаются без изменений) ... */
+
+        /* Новые стили для информации оператора */
+        .operator-info {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1001;
+            display: none;
+        }
+        
+        .shift-time {
+            color: #ffcc00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Остальной интерфейс остается без изменений до модальных окон -->
+
+    <!-- Модальное окно команды (обновленное) -->
+    <div class="modal" id="teamModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Команда пункта</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <div class="team-member">
+                    <div style="background:#6a5acd;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">ИИ</div>
+                    <div>
+                        <div><strong>Иван Иванов</strong></div>
+                        <div>Старший оператор</div>
+                        <div><a href="tel:+79001234567">+7 (900) 123-45-67</a></div>
+                        <button class="btn" onclick="Telegram.WebApp.openTelegramLink('tg://resolve?domain=ivanov')">Написать в Telegram</button>
+                    </div>
+                </div>
+                <!-- Другие сотрудники -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно расходников (обновленное) -->
+    <div class="modal" id="suppliesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Запрос расходников</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <div class="form-group">
+                    <label>Тип материала</label>
+                    <select id="supplyType">
+                        <option>Пакеты (средние)</option>
+                        <option>Пакеты (большие)</option>
+                        <option>Скотч</option>
+                        <option>Наклейки со штрих-кодами</option>
+                        <option>Моющее средство</option>
+                        <option>Тряпки</option>
+                        <option>Ножи</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Количество</label>
+                    <input type="number" id="supplyAmount" value="1" min="1">
+                </div>
+                <button class="btn" id="requestSupplies">Запросить у управляющего</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно отчетов (обновленное) -->
+    <div class="modal" id="reportsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Отчетность</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Отчет по остаткам</h3>
+                <div class="form-group">
+                    <label>Тип материала</label>
+                    <select id="reportSupplyType">
+                        <option>Скотч</option>
+                        <option>Наклейки</option>
+                        <option>Пакеты (средние)</option>
+                        <option>Пакеты (большие)</option>
+                        <option>Моющее средство</option>
+                        <option>Тряпки</option>
+                        <option>Ножи</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Фактический остаток</label>
+                    <input type="number" id="supplyBalance" min="0">
+                </div>
+                
+                <h3>Фотоотчет</h3>
+                <div class="form-group">
+                    <label>Тип отчета</label>
+                    <select id="photoReportType">
+                        <option>Состояние пункта</option>
+                        <option>Чистота на пункте</option>
+                        <option>Нештатная ситуация</option>
+                        <option>Состояние посылок</option>
+                    </select>
+                </div>
+                <button class="btn" id="takePhoto">Сделать фото</button>
+                
+                <button class="btn" id="submitReport" style="margin-top:20px;">Отправить отчет</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок информации об операторе -->
+    <div class="operator-info" id="operatorInfo">
+        <h3>Иван Иванов</h3>
+        <p>ПВЗ Ozon-15</p>
+        <p>Адрес: г. Москва, ул. Примерная, 15</p>
+        <p>Начало работы: 08:00</p>
+        <p class="shift-time">До конца смены: <span id="timeLeft">4:32:15</span></p>
+    </div>
+
+    <script>
+        // Инициализация приложения
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+
+        // Показ информации оператора при нажатии на имя
+        document.querySelector('.user-info').addEventListener('click', function() {
+            const info = document.getElementById('operatorInfo');
+            info.style.display = info.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Таймер до конца смены (закрытие в 21:00)
+        function updateShiftTimer() {
+            const now = new Date();
+            const endTime = new Date();
+            endTime.setHours(21, 0, 0, 0);
+            
+            if (now > endTime) {
+                document.getElementById('timeLeft').textContent = "Смена завершена";
+                return;
+            }
+            
+            const diff = endTime - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('timeLeft').textContent = 
+                `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        setInterval(updateShiftTimer, 1000);
+        updateShiftTimer();
+
+        // Обработка запроса расходников
+        document.getElementById('requestSupplies').addEventListener('click', function() {
+            const type = document.getElementById('supplyType').value;
+            const amount = document.getElementById('supplyAmount').value;
+            
+            showAlert(`Запрос отправлен: ${type} - ${amount} шт.`);
+            closeModal('suppliesModal');
+            
+            // Здесь будет отправка данных на сервер
+        });
+
+        // Обработка отчетов
+        document.getElementById('submitReport').addEventListener('click', function() {
+            showAlert("Отчет успешно отправлен");
+            closeModal('reportsModal');
+            
+            // Здесь будет отправка данных на сервер
+        });
+
+        // Остальной код остается без изменений
+    </script>
+</body>
+</html>
 </body>
 </html>
