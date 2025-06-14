@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Дашборд управляющего ПВЗ</title>
+    <title>Дашборд управляющего</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -77,6 +77,57 @@
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .shifts-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .shifts-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .shifts-list {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .shift-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .pvz-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .pvz-stat-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .pvz-stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .pvz-stat-label {
+            font-size: 12px;
+            opacity: 0.8;
         }
         
         .notice-board {
@@ -219,7 +270,7 @@
             margin-bottom: 15px;
         }
         
-        .stats-container {
+        .shifts-container {
             flex: 2;
         }
         
@@ -388,6 +439,62 @@
             width: 100%;
         }
         
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        
+        .message-incoming {
+            background: #e6e6e6;
+            margin-right: auto;
+        }
+        
+        .message-outgoing {
+            background: #6a5acd;
+            color: white;
+            margin-left: auto;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            text-align: right;
+            margin-top: 3px;
+        }
+        
+        .supply-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .team-member {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .team-member img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -395,59 +502,24 @@
         }
         
         .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            background: #f0f4ff;
+            border-radius: 10px;
             padding: 15px;
             text-align: center;
-            backdrop-filter: blur(5px);
         }
         
         .stat-value {
             font-size: 24px;
             font-weight: bold;
-            color: white;
+            color: #6a5acd;
         }
         
         .stat-label {
             font-size: 14px;
-            color: rgba(255,255,255,0.8);
+            color: #666;
         }
         
-        .pvp-status {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .pvp-status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        
-        .pvp-status-indicator.open {
-            background: #4CAF50;
-        }
-        
-        .pvp-status-indicator.closed {
-            background: #f44336;
-        }
-        
-        .pvp-status-info {
-            flex: 1;
-        }
-        
-        .pvp-status-name {
-            font-weight: 500;
-        }
-        
-        .pvp-status-operator {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-        
+        /* Новые стили для информации об операторе */
         .operator-info {
             position: fixed;
             top: 60px;
@@ -461,7 +533,7 @@
             max-width: 90%;
             text-align: center;
         }
-        
+
         .shift-time {
             color: #ffcc00;
             font-weight: bold;
@@ -476,35 +548,53 @@
     </div>
     
     <div class="top-container">
-        <div class="stats-container glass-card">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">15</div>
-                    <div class="stat-label">Открытых ПВЗ</div>
+        <div class="shifts-container glass-card">
+            <div class="shifts-widget">
+                <div class="shifts-title">График смен</div>
+                <div class="shifts-list">
+                    <div class="shift-item">
+                        <span>ПВЗ Ozon-15</span>
+                        <span>08:00 - 21:00</span>
+                    </div>
+                    <div class="shift-item">
+                        <span>ПВЗ WB-22</span>
+                        <span>09:00 - 20:00</span>
+                    </div>
+                    <div class="shift-item">
+                        <span>ПВЗ CDEK-7</span>
+                        <span>10:00 - 19:00</span>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">3</div>
-                    <div class="stat-label">Закрытых ПВЗ</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">11</div>
-                    <div class="stat-label">Ozon</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">7</div>
-                    <div class="stat-label">Wildberries</div>
+                
+                <div class="pvz-stats">
+                    <div class="pvz-stat-card">
+                        <div class="pvz-stat-value">8/10</div>
+                        <div class="pvz-stat-label">Открыто ПВЗ</div>
+                    </div>
+                    <div class="pvz-stat-card">
+                        <div class="pvz-stat-value">15</div>
+                        <div class="pvz-stat-label">Операторов</div>
+                    </div>
+                    <div class="pvz-stat-card">
+                        <div class="pvz-stat-value">6</div>
+                        <div class="pvz-stat-label">Ozon</div>
+                    </div>
+                    <div class="pvz-stat-card">
+                        <div class="pvz-stat-value">4</div>
+                        <div class="pvz-stat-label">Wildberries</div>
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="side-buttons">
-            <button class="side-btn" id="scheduleBtn">
-                📅
-                <span class="side-btn-label">График смен</span>
+            <button class="side-btn" id="sosBtn">
+                🆘
+                <span class="side-btn-label">SOS</span>
             </button>
             <button class="side-btn" id="reportsBtn">
                 📊
-                <span class="side-btn-label">Отчёты</span>
+                <span class="side-btn-label">Статистика</span>
             </button>
         </div>
     </div>
@@ -513,9 +603,9 @@
         <div class="notice-board">
             <div class="notice-title">Важные объявления</div>
             <div class="notice-content">
-                • <span class="important">Срочно!</span> ПВЗ Ozon-15: заканчиваются пакеты<br>
-                • Завтра инвентаризация на всех ПВЗ<br>
+                • Завтра <span class="important">инвентаризация</span> на всех ПВЗ<br>
                 • Новые правила упаковки с 1 июля<br>
+                • <span class="important">Срочно!</span> ПВЗ Ozon-15: заканчиваются пакеты<br>
                 • Обучение для новых операторов в пятницу
             </div>
         </div>
@@ -528,40 +618,20 @@
         </div>
     </div>
     
-    <div class="glass-card">
-        <h3 style="margin-bottom: 10px; text-align: center;">Статус ПВЗ</h3>
-        <div id="pvpStatusList">
-            <div class="pvp-status">
-                <div class="pvp-status-indicator open"></div>
-                <div class="pvp-status-info">
-                    <div class="pvp-status-name">Ozon-15</div>
-                    <div class="pvp-status-operator">Иван Иванов</div>
-                </div>
-                <div>📍</div>
-            </div>
-            <div class="pvp-status">
-                <div class="pvp-status-indicator open"></div>
-                <div class="pvp-status-info">
-                    <div class="pvp-status-name">WB-7</div>
-                    <div class="pvp-status-operator">Мария Петрова</div>
-                </div>
-                <div>📍</div>
-            </div>
-            <div class="pvp-status">
-                <div class="pvp-status-indicator closed"></div>
-                <div class="pvp-status-info">
-                    <div class="pvp-status-name">Ozon-22</div>
-                    <div class="pvp-status-operator">Не открыт</div>
-                </div>
-                <div>❌</div>
-            </div>
-        </div>
-    </div>
-    
     <div class="actions-grid">
-        <button class="action-btn" id="teamBtn">
-            👥
-            <span class="action-label">Команда</span>
+        <button class="action-btn" id="checkinBtn">
+            📍
+            <span class="action-label">Мониторинг</span>
+        </button>
+        
+        <button class="action-btn" id="chatBtn">
+            💬
+            <span class="action-label">Чат</span>
+        </button>
+        
+        <button class="action-btn" id="helpBtn">
+            ❓
+            <span class="action-label">Помощь</span>
         </button>
         
         <button class="action-btn" id="suppliesBtn">
@@ -569,225 +639,104 @@
             <span class="action-label">Расходники</span>
         </button>
         
-        <button class="action-btn" id="financeBtn">
-            💰
-            <span class="action-label">Финансы</span>
-        </button>
-        
-        <button class="action-btn" id="analyticsBtn">
-            📈
-            <span class="action-label">Аналитика</span>
+        <button class="action-btn" id="teamBtn">
+            👥
+            <span class="action-label">Команда</span>
         </button>
         
         <button class="action-btn" id="settingsBtn">
             ⚙️
             <span class="action-label">Настройки</span>
         </button>
-        
-        <button class="action-btn" id="helpBtn">
-            ❓
-            <span class="action-label">Помощь</span>
-        </button>
     </div>
     
-    <!-- Модальные окна -->
-    <div class="modal" id="scheduleModal">
+    <!-- Модальные окна для каждого раздела -->
+    <div class="modal" id="sosModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">График смен</div>
+                <div class="modal-title">Экстренные сигналы</div>
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-section">
-                <div class="form-group">
-                    <label>Дата</label>
-                    <input type="date" id="scheduleDate">
-                </div>
-                <div class="form-group">
-                    <label>ПВЗ</label>
-                    <select id="pvpSelect">
-                        <option>Ozon-15</option>
-                        <option>WB-7</option>
-                        <option>Ozon-22</option>
-                        <option>WB-3</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Оператор</label>
-                    <select id="operatorSelect">
-                        <option>Иван Иванов</option>
-                        <option>Мария Петрова</option>
-                        <option>Алексей Сидоров</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Смена</label>
-                    <select id="shiftSelect">
-                        <option>08:00 - 21:00</option>
-                        <option>09:00 - 22:00</option>
-                        <option>10:00 - 23:00</option>
-                    </select>
-                </div>
-                <button class="btn" id="saveSchedule">Сохранить график</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="teamModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Управление командой</div>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-section">
-                <h3>Текущие сотрудники</h3>
-                <div class="team-member">
-                    <div style="background:#6a5acd;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">ИИ</div>
-                    <div>
-                        <div><strong>Иван Иванов</strong></div>
-                        <div>Старший оператор</div>
-                        <div>+7 (900) 123-45-67</div>
-                    </div>
-                    <button class="btn" style="padding: 5px 10px; font-size: 12px;">Редактировать</button>
-                </div>
-                <div class="team-member">
-                    <div style="background:#48c774;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">МП</div>
-                    <div>
-                        <div><strong>Мария Петрова</strong></div>
-                        <div>Оператор</div>
-                        <div>+7 (900) 123-45-68</div>
-                    </div>
-                    <button class="btn" style="padding: 5px 10px; font-size: 12px;">Редактировать</button>
-                </div>
-            </div>
-            <div class="modal-section">
-                <h3>Добавить сотрудника</h3>
-                <div class="form-group">
-                    <label>ФИО</label>
-                    <input type="text" id="newOperatorName" placeholder="Введите полное имя">
-                </div>
-                <div class="form-group">
-                    <label>Должность</label>
-                    <input type="text" id="newOperatorPosition" placeholder="Введите должность">
-                </div>
-                <div class="form-group">
-                    <label>Телефон</label>
-                    <input type="tel" id="newOperatorPhone" placeholder="Введите номер телефона">
-                </div>
-                <div class="form-group">
-                    <label>Доступ</label>
-                    <select id="newOperatorAccess">
-                        <option>Оператор</option>
-                        <option>Старший оператор</option>
-                        <option>Курьер</option>
-                    </select>
-                </div>
-                <button class="btn" id="addOperator">Добавить сотрудника</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="suppliesModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Управление расходниками</div>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-section">
-                <h3>Запросы от операторов</h3>
-                <div style="margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 10px;">
-                    <div><strong>Ozon-15: Иван Иванов</strong></div>
-                    <div>Пакеты (средние) - 10 шт</div>
-                    <div style="display: flex; gap: 10px; margin-top: 5px;">
-                        <button class="btn" style="padding: 5px 10px; font-size: 12px; background: #4CAF50;">Подтвердить</button>
-                        <button class="btn" style="padding: 5px 10px; font-size: 12px; background: #f44336;">Отклонить</button>
+                <h3>Активные SOS</h3>
+                <div class="alert-list">
+                    <div class="alert-item">
+                        <strong>ПВЗ Ozon-15</strong>
+                        <p>Иван Иванов, 10:32</p>
+                        <p>Недостаток расходников</p>
+                        <button class="btn">Принять в работу</button>
                     </div>
                 </div>
             </div>
-            <div class="modal-section">
-                <h3>Остатки по ПВЗ</h3>
-                <div class="form-group">
-                    <label>Выберите ПВЗ</label>
-                    <select id="pvpSuppliesSelect">
-                        <option>Все ПВЗ</option>
-                        <option>Ozon-15</option>
-                        <option>WB-7</option>
-                        <option>Ozon-22</option>
-                    </select>
-                </div>
-                <div style="max-height: 300px; overflow-y: auto;">
-                    <div class="supply-item">
-                        <div>Пакеты (средние)</div>
-                        <div><strong>142 шт</strong></div>
-                    </div>
-                    <div class="supply-item">
-                        <div>Пакеты (большие)</div>
-                        <div><strong>78 шт</strong></div>
-                    </div>
-                    <div class="supply-item">
-                        <div>Скотч</div>
-                        <div><strong>37 шт</strong></div>
-                    </div>
-                    <div class="supply-item">
-                        <div>Наклейки</div>
-                        <div><strong>23 пачки</strong></div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn">Обновить остатки</button>
         </div>
     </div>
     
     <div class="modal" id="reportsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Отчёты</div>
+                <div class="modal-title">Статистика по ПВЗ</div>
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-section">
-                <h3>Фотоотчёты операторов</h3>
-                <div style="margin-bottom: 15px;">
-                    <div><strong>Ozon-15: Состояние пункта</strong></div>
-                    <div style="background: #eee; height: 100px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 10px 0;">
-                        [Превью фото]
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">124</div>
+                        <div class="stat-label">Посылок за день</div>
                     </div>
-                    <div style="font-size: 12px; color: #666;">26.06.2024 10:30</div>
+                    <div class="stat-card">
+                        <div class="stat-value">87</div>
+                        <div class="stat-label">Выдано за день</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Возвраты</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">96%</div>
+                        <div class="stat-label">Удовлетворённость</div>
+                    </div>
                 </div>
             </div>
             <div class="modal-section">
-                <h3>Сформировать отчёт</h3>
+                <h3>Отчеты по пунктам</h3>
                 <div class="form-group">
-                    <label>Тип отчёта</label>
+                    <label>Выберите ПВЗ</label>
                     <select>
-                        <option>По остаткам расходников</option>
-                        <option>По работе ПВЗ</option>
-                        <option>Финансовый</option>
-                        <option>По качеству обслуживания</option>
+                        <option>Все ПВЗ</option>
+                        <option>ПВЗ Ozon-15</option>
+                        <option>ПВЗ WB-22</option>
+                        <option>ПВЗ CDEK-7</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Период</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="date" style="flex: 1;" placeholder="Начало">
-                        <input type="date" style="flex: 1;" placeholder="Конец">
-                    </div>
+                    <select>
+                        <option>За сегодня</option>
+                        <option>За неделю</option>
+                        <option>За месяц</option>
+                    </select>
                 </div>
-                <button class="btn">Сформировать</button>
+                <button class="btn">Сформировать отчёт</button>
             </div>
         </div>
     </div>
     
-    <!-- Блок информации об управляющем -->
+    <!-- Остальные модальные окна (чат, команда, настройки и т.д.) -->
+    
+    <!-- Блок информации об операторе -->
     <div class="operator-info" id="operatorInfo">
         <h3>Алексей Петров</h3>
-        <p>Управляющий регионом</p>
-        <p>Телефон: +7 (900) 555-44-33</p>
+        <p>Управляющий сетью ПВЗ</p>
+        <p>Телефон: +7 (900) 987-65-43</p>
+        <p>Email: manager@example.com</p>
     </div>
 
     <script>
-        // Инициализация приложения
+        // Инициализация Telegram WebApp
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
         
+        // Функция для гарантированной работы в мобильном Telegram
         function initApp() {
             // Инициализация часов
             function updateClock() {
@@ -806,7 +755,7 @@
             setInterval(updateClock, 1000);
             updateClock();
             
-            // Функция для показа сообщений
+            // Функция для показа зелёных сообщений
             function showAlert(message) {
                 const oldAlert = document.getElementById('custom-alert');
                 if(oldAlert) oldAlert.remove();
@@ -854,10 +803,10 @@
             });
             
             // Обработчики для кнопок открытия модальных окон
-            document.getElementById('scheduleBtn').addEventListener('click', function(e) {
+            document.getElementById('sosBtn').addEventListener('click', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
-                openModal('scheduleModal');
+                openModal('sosModal');
             });
             
             document.getElementById('reportsBtn').addEventListener('click', function(e) {
@@ -866,10 +815,16 @@
                 openModal('reportsModal');
             });
             
-            document.getElementById('teamBtn').addEventListener('click', function(e) {
+            document.getElementById('chatBtn').addEventListener('click', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
-                openModal('teamModal');
+                openModal('chatModal');
+            });
+            
+            document.getElementById('helpBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('helpModal');
             });
             
             document.getElementById('suppliesBtn').addEventListener('click', function(e) {
@@ -878,31 +833,19 @@
                 openModal('suppliesModal');
             });
             
-            document.getElementById('financeBtn').addEventListener('click', function(e) {
+            document.getElementById('teamBtn').addEventListener('click', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
-                showAlert("Финансовый модуль будет добавлен в следующей версии");
-            });
-            
-            document.getElementById('analyticsBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                showAlert("Аналитический модуль будет добавлен в следующей версии");
+                openModal('teamModal');
             });
             
             document.getElementById('settingsBtn').addEventListener('click', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
-                showAlert("Настройки будут доступны в следующей версии");
+                openModal('settingsModal');
             });
             
-            document.getElementById('helpBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                showAlert("Раздел помощи будет доступен в следующей версии");
-            });
-            
-            // Показ информации при нажатии на имя
+            // Показ информации оператора при нажатии на имя
             document.querySelector('.user-info').addEventListener('click', function(e) {
                 e.stopPropagation();
                 const info = document.getElementById('operatorInfo');
@@ -915,18 +858,6 @@
                     e.target !== document.querySelector('.user-info')) {
                     document.getElementById('operatorInfo').style.display = 'none';
                 }
-            });
-            
-            // Сохранение графика смен
-            document.getElementById('saveSchedule').addEventListener('click', function() {
-                showAlert("График смен успешно сохранён");
-                closeModal('scheduleModal');
-            });
-            
-            // Добавление нового сотрудника
-            document.getElementById('addOperator').addEventListener('click', function() {
-                showAlert("Новый сотрудник добавлен");
-                closeModal('teamModal');
             });
             
             // Кнопка выхода
