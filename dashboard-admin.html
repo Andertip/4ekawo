@@ -1,1 +1,977 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Дашборд управляющего ПВЗ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: -1;
+            border-radius: 30px;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-bottom: 15px;
+        }
+        
+        .user-info {
+            font-size: 16px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            max-width: 70%;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .glass-card {
+            background: rgba(173, 216, 230, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notice-board {
+            background: #1a5e25;
+            border: 3px solid #5d4037;
+            border-radius: 10px;
+            padding: 12px;
+            position: relative;
+            font-family: 'Chalkboard', 'Comic Sans MS', cursive;
+            min-height: 120px;
+        }
+        
+        .notice-board::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                transparent,
+                transparent 18px,
+                rgba(0,0,0,0.1) 20px
+            );
+            pointer-events: none;
+            border-radius: 7px;
+        }
+        
+        .notice-title {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #ff5555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .notice-content {
+            font-size: 16px;
+            line-height: 1.4;
+            color: white;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .notice-content .important {
+            color: #ff5555;
+            font-weight: bold;
+        }
+        
+        .clock-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .clock-display {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+            font-family: 'Digital', monospace;
+        }
+        
+        .date-display {
+            font-size: 16px;
+            opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(145deg, #6a5acd, #9370db);
+            border: none;
+            border-radius: 16px;
+            padding: 20px 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 
+                0 6px 12px rgba(0,0,0,0.2),
+                inset 0 -4px 8px rgba(0,0,0,0.3),
+                inset 0 4px 8px rgba(255,255,255,0.2);
+            position: relative;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255,255,255,0.3), 
+                rgba(255,255,255,0.1) 20%,
+                transparent
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
+        .action-btn:active {
+            box-shadow: 
+                0 2px 4px rgba(0,0,0,0.2),
+                inset 0 -2px 4px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.2);
+            transform: translateY(3px);
+        }
+        
+        .action-btn.active {
+            background: linear-gradient(145deg, #ff5555, #ff0000);
+        }
+        
+        .action-label {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        
+        .top-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .stats-container {
+            flex: 2;
+        }
+        
+        .side-buttons {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .side-btn {
+            background: linear-gradient(145deg, #48c774, #00d1b2);
+            border: none;
+            border-radius: 16px;
+            padding: 15px 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.2),
+                inset 0 -4px 8px rgba(0,0,0,0.3),
+                inset 0 4px 8px rgba(255,255,255,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .side-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255,255,255,0.3), 
+                rgba(255,255,255,0.1) 20%,
+                transparent
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
+        .side-btn-label {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        
+        /* Стили для зелёных уведомлений */
+        #custom-alert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; top: 0; }
+            to { opacity: 1; top: 20px; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; top: 20px; }
+            to { opacity: 0; top: 0; }
+        }
+        
+        /* Стили для модальных окон */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: #333;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .modal-section {
+            margin-bottom: 20px;
+        }
+        
+        .modal-section h3 {
+            margin-bottom: 10px;
+            color: #6a5acd;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            background: #6a5acd;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .pvp-status {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .pvp-status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .pvp-status-indicator.open {
+            background: #4CAF50;
+        }
+        
+        .pvp-status-indicator.closed {
+            background: #f44336;
+        }
+        
+        .pvp-status-info {
+            flex: 1;
+        }
+        
+        .pvp-status-name {
+            font-weight: 500;
+        }
+        
+        .pvp-status-operator {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .operator-info {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1001;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .shift-time {
+            color: #ffcc00;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="user-info">Управляющий: Алексей Петров</div>
+        <button class="logout-btn">🚪</button>
+    </div>
+    
+    <div class="top-container">
+        <div class="stats-container glass-card">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Открытых ПВЗ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Закрытых ПВЗ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">11</div>
+                    <div class="stat-label">Ozon</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Wildberries</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="side-buttons">
+            <button class="side-btn" id="scheduleBtn">
+                📅
+                <span class="side-btn-label">График смен</span>
+            </button>
+            <button class="side-btn" id="reportsBtn">
+                📊
+                <span class="side-btn-label">Отчёты</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <div class="notice-board">
+            <div class="notice-title">Важные объявления</div>
+            <div class="notice-content">
+                • <span class="important">Срочно!</span> ПВЗ Ozon-15: заканчиваются пакеты<br>
+                • Завтра инвентаризация на всех ПВЗ<br>
+                • Новые правила упаковки с 1 июля<br>
+                • Обучение для новых операторов в пятницу
+            </div>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <div class="clock-widget">
+            <div class="clock-display" id="clock">10:45:27</div>
+            <div class="date-display" id="date">26 июня 2024</div>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <h3 style="margin-bottom: 10px; text-align: center;">Статус ПВЗ</h3>
+        <div id="pvpStatusList">
+            <div class="pvp-status">
+                <div class="pvp-status-indicator open"></div>
+                <div class="pvp-status-info">
+                    <div class="pvp-status-name">Ozon-15</div>
+                    <div class="pvp-status-operator">Иван Иванов</div>
+                </div>
+                <div>📍</div>
+            </div>
+            <div class="pvp-status">
+                <div class="pvp-status-indicator open"></div>
+                <div class="pvp-status-info">
+                    <div class="pvp-status-name">WB-7</div>
+                    <div class="pvp-status-operator">Мария Петрова</div>
+                </div>
+                <div>📍</div>
+            </div>
+            <div class="pvp-status">
+                <div class="pvp-status-indicator closed"></div>
+                <div class="pvp-status-info">
+                    <div class="pvp-status-name">Ozon-22</div>
+                    <div class="pvp-status-operator">Не открыт</div>
+                </div>
+                <div>❌</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="actions-grid">
+        <button class="action-btn" id="teamBtn">
+            👥
+            <span class="action-label">Команда</span>
+        </button>
+        
+        <button class="action-btn" id="suppliesBtn">
+            📦
+            <span class="action-label">Расходники</span>
+        </button>
+        
+        <button class="action-btn" id="financeBtn">
+            💰
+            <span class="action-label">Финансы</span>
+        </button>
+        
+        <button class="action-btn" id="analyticsBtn">
+            📈
+            <span class="action-label">Аналитика</span>
+        </button>
+        
+        <button class="action-btn" id="settingsBtn">
+            ⚙️
+            <span class="action-label">Настройки</span>
+        </button>
+        
+        <button class="action-btn" id="helpBtn">
+            ❓
+            <span class="action-label">Помощь</span>
+        </button>
+    </div>
+    
+    <!-- Модальные окна -->
+    <div class="modal" id="scheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">График смен</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <div class="form-group">
+                    <label>Дата</label>
+                    <input type="date" id="scheduleDate">
+                </div>
+                <div class="form-group">
+                    <label>ПВЗ</label>
+                    <select id="pvpSelect">
+                        <option>Ozon-15</option>
+                        <option>WB-7</option>
+                        <option>Ozon-22</option>
+                        <option>WB-3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Оператор</label>
+                    <select id="operatorSelect">
+                        <option>Иван Иванов</option>
+                        <option>Мария Петрова</option>
+                        <option>Алексей Сидоров</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Смена</label>
+                    <select id="shiftSelect">
+                        <option>08:00 - 21:00</option>
+                        <option>09:00 - 22:00</option>
+                        <option>10:00 - 23:00</option>
+                    </select>
+                </div>
+                <button class="btn" id="saveSchedule">Сохранить график</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="teamModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Управление командой</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Текущие сотрудники</h3>
+                <div class="team-member">
+                    <div style="background:#6a5acd;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">ИИ</div>
+                    <div>
+                        <div><strong>Иван Иванов</strong></div>
+                        <div>Старший оператор</div>
+                        <div>+7 (900) 123-45-67</div>
+                    </div>
+                    <button class="btn" style="padding: 5px 10px; font-size: 12px;">Редактировать</button>
+                </div>
+                <div class="team-member">
+                    <div style="background:#48c774;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">МП</div>
+                    <div>
+                        <div><strong>Мария Петрова</strong></div>
+                        <div>Оператор</div>
+                        <div>+7 (900) 123-45-68</div>
+                    </div>
+                    <button class="btn" style="padding: 5px 10px; font-size: 12px;">Редактировать</button>
+                </div>
+            </div>
+            <div class="modal-section">
+                <h3>Добавить сотрудника</h3>
+                <div class="form-group">
+                    <label>ФИО</label>
+                    <input type="text" id="newOperatorName" placeholder="Введите полное имя">
+                </div>
+                <div class="form-group">
+                    <label>Должность</label>
+                    <input type="text" id="newOperatorPosition" placeholder="Введите должность">
+                </div>
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" id="newOperatorPhone" placeholder="Введите номер телефона">
+                </div>
+                <div class="form-group">
+                    <label>Доступ</label>
+                    <select id="newOperatorAccess">
+                        <option>Оператор</option>
+                        <option>Старший оператор</option>
+                        <option>Курьер</option>
+                    </select>
+                </div>
+                <button class="btn" id="addOperator">Добавить сотрудника</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="suppliesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Управление расходниками</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Запросы от операторов</h3>
+                <div style="margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 10px;">
+                    <div><strong>Ozon-15: Иван Иванов</strong></div>
+                    <div>Пакеты (средние) - 10 шт</div>
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px; background: #4CAF50;">Подтвердить</button>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px; background: #f44336;">Отклонить</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-section">
+                <h3>Остатки по ПВЗ</h3>
+                <div class="form-group">
+                    <label>Выберите ПВЗ</label>
+                    <select id="pvpSuppliesSelect">
+                        <option>Все ПВЗ</option>
+                        <option>Ozon-15</option>
+                        <option>WB-7</option>
+                        <option>Ozon-22</option>
+                    </select>
+                </div>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <div class="supply-item">
+                        <div>Пакеты (средние)</div>
+                        <div><strong>142 шт</strong></div>
+                    </div>
+                    <div class="supply-item">
+                        <div>Пакеты (большие)</div>
+                        <div><strong>78 шт</strong></div>
+                    </div>
+                    <div class="supply-item">
+                        <div>Скотч</div>
+                        <div><strong>37 шт</strong></div>
+                    </div>
+                    <div class="supply-item">
+                        <div>Наклейки</div>
+                        <div><strong>23 пачки</strong></div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn">Обновить остатки</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="reportsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Отчёты</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Фотоотчёты операторов</h3>
+                <div style="margin-bottom: 15px;">
+                    <div><strong>Ozon-15: Состояние пункта</strong></div>
+                    <div style="background: #eee; height: 100px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 10px 0;">
+                        [Превью фото]
+                    </div>
+                    <div style="font-size: 12px; color: #666;">26.06.2024 10:30</div>
+                </div>
+            </div>
+            <div class="modal-section">
+                <h3>Сформировать отчёт</h3>
+                <div class="form-group">
+                    <label>Тип отчёта</label>
+                    <select>
+                        <option>По остаткам расходников</option>
+                        <option>По работе ПВЗ</option>
+                        <option>Финансовый</option>
+                        <option>По качеству обслуживания</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Период</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="date" style="flex: 1;" placeholder="Начало">
+                        <input type="date" style="flex: 1;" placeholder="Конец">
+                    </div>
+                </div>
+                <button class="btn">Сформировать</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Блок информации об управляющем -->
+    <div class="operator-info" id="operatorInfo">
+        <h3>Алексей Петров</h3>
+        <p>Управляющий регионом</p>
+        <p>Телефон: +7 (900) 555-44-33</p>
+    </div>
 
+    <script>
+        // Инициализация приложения
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        
+        function initApp() {
+            // Инициализация часов
+            function updateClock() {
+                const now = new Date();
+                const time = now.toLocaleTimeString('ru-RU');
+                const date = now.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                
+                document.getElementById('clock').textContent = time;
+                document.getElementById('date').textContent = date;
+            }
+            
+            setInterval(updateClock, 1000);
+            updateClock();
+            
+            // Функция для показа сообщений
+            function showAlert(message) {
+                const oldAlert = document.getElementById('custom-alert');
+                if(oldAlert) oldAlert.remove();
+                
+                const alertBox = document.createElement('div');
+                alertBox.id = 'custom-alert';
+                alertBox.textContent = message;
+                alertBox.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #4CAF50;
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    animation: fadeIn 0.3s;
+                `;
+                
+                document.body.appendChild(alertBox);
+                
+                setTimeout(() => {
+                    alertBox.style.animation = 'fadeOut 0.5s';
+                    setTimeout(() => alertBox.remove(), 500);
+                }, 2000);
+            }
+            
+            // Функции для работы с модальными окнами
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'flex';
+            }
+            
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+            
+            // Инициализация модальных окон
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    modal.style.display = 'none';
+                });
+            });
+            
+            // Обработчики для кнопок открытия модальных окон
+            document.getElementById('scheduleBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('scheduleModal');
+            });
+            
+            document.getElementById('reportsBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('reportsModal');
+            });
+            
+            document.getElementById('teamBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('teamModal');
+            });
+            
+            document.getElementById('suppliesBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('suppliesModal');
+            });
+            
+            document.getElementById('financeBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                showAlert("Финансовый модуль будет добавлен в следующей версии");
+            });
+            
+            document.getElementById('analyticsBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                showAlert("Аналитический модуль будет добавлен в следующей версии");
+            });
+            
+            document.getElementById('settingsBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                showAlert("Настройки будут доступны в следующей версии");
+            });
+            
+            document.getElementById('helpBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                showAlert("Раздел помощи будет доступен в следующей версии");
+            });
+            
+            // Показ информации при нажатии на имя
+            document.querySelector('.user-info').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const info = document.getElementById('operatorInfo');
+                info.style.display = info.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // Закрытие при клике вне блока
+            document.addEventListener('click', function(e) {
+                if (!document.getElementById('operatorInfo').contains(e.target) && 
+                    e.target !== document.querySelector('.user-info')) {
+                    document.getElementById('operatorInfo').style.display = 'none';
+                }
+            });
+            
+            // Сохранение графика смен
+            document.getElementById('saveSchedule').addEventListener('click', function() {
+                showAlert("График смен успешно сохранён");
+                closeModal('scheduleModal');
+            });
+            
+            // Добавление нового сотрудника
+            document.getElementById('addOperator').addEventListener('click', function() {
+                showAlert("Новый сотрудник добавлен");
+                closeModal('teamModal');
+            });
+            
+            // Кнопка выхода
+            document.querySelector('.logout-btn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                Telegram.WebApp.showPopup({
+                    title: 'Подтверждение выхода',
+                    message: 'Вы уверены, что хотите выйти?',
+                    buttons: [
+                        {id: 'yes', type: 'destructive', text: 'Выйти'},
+                        {id: 'no', type: 'cancel'}
+                    ]
+                }, function(btnId) {
+                    if(btnId === 'yes') {
+                        document.body.innerHTML = `
+                            <div style="text-align:center;padding:50px 20px">
+                                <h1>🚪 Вы вышли из системы</h1>
+                                <p>Для возврата введите код доступа</p>
+                                <input type="text" id="accessCode" placeholder="Введите код доступа" 
+                                    style="padding:15px; margin:20px; width:80%; border-radius:15px">
+                                <button onclick="checkAccessCode()" 
+                                    style="padding:15px 30px; background:#4CAF50; color:white; border:none; border-radius:15px">
+                                    Войти
+                                </button>
+                            </div>
+                        `;
+                        
+                        window.checkAccessCode = function() {
+                            const code = document.getElementById('accessCode').value;
+                            if(code === "admin") {
+                                location.reload();
+                            } else if(code === "2024") {
+                                window.location.href = "index.html";
+                            } else {
+                                showAlert('Неверный код доступа!');
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Запуск приложения после полной загрузки страницы
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
