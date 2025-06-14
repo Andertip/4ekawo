@@ -887,313 +887,326 @@
     </div>
 
     <script>
+        // Инициализация Telegram WebApp
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
         
-        // Инициализация часов
-        function updateClock() {
-            const now = new Date();
-            const time = now.toLocaleTimeString('ru-RU');
-            const date = now.toLocaleDateString('ru-RU', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            
-            document.getElementById('clock').textContent = time;
-            document.getElementById('date').textContent = date;
-        }
-        
-        setInterval(updateClock, 1000);
-        updateClock();
-        
-        // Функция для показа зелёных сообщений
-        function showAlert(message) {
-            // Убираем старые сообщения если есть
-            const oldAlert = document.getElementById('custom-alert');
-            if(oldAlert) oldAlert.remove();
-            
-            // Создаем красивое сообщение
-            const alertBox = document.createElement('div');
-            alertBox.id = 'custom-alert';
-            alertBox.textContent = message;
-            alertBox.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #4CAF50;
-                color: white;
-                padding: 15px 25px;
-                border-radius: 5px;
-                box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                z-index: 1000;
-                animation: fadeIn 0.3s;
-            `;
-            
-            document.body.appendChild(alertBox);
-            
-            // Автоматически скрываем через 2 секунды
-            setTimeout(() => {
-                alertBox.style.animation = 'fadeOut 0.5s';
-                setTimeout(() => alertBox.remove(), 500);
-            }, 2000);
-        }
-        
-        // Функции для работы с модальными окнами
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // Инициализация модальных окон
-        document.querySelectorAll('.close-modal').forEach(button => {
-            button.addEventListener('click', function() {
-                const modal = this.closest('.modal');
-                modal.style.display = 'none';
-            });
-        });
-        
-        // Обработчики для кнопок открытия модальных окон
-        document.getElementById('sosBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('sosModal');
-            getLocation();
-        });
-        
-        document.getElementById('reportsBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('reportsModal');
-        });
-        
-        document.getElementById('chatBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('chatModal');
-        });
-        
-        document.getElementById('helpBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('helpModal');
-        });
-        
-        document.getElementById('suppliesBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('suppliesModal');
-        });
-        
-        document.getElementById('teamBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('teamModal');
-        });
-        
-        document.getElementById('settingsBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('settingsModal');
-        });
-        
-        // Определение местоположения для SOS
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    showPosition,
-                    showError,
-                    { timeout: 10000 }
-                );
-            } else {
-                document.getElementById('sosLocation').innerHTML = 
-                    "Геолокация не поддерживается вашим устройством";
-            }
-        }
-        
-        function showPosition(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            document.getElementById('sosLocation').innerHTML = 
-                `Широта: ${lat.toFixed(6)}<br>Долгота: ${lon.toFixed(6)}`;
-        }
-        
-        function showError(error) {
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    document.getElementById('sosLocation').innerHTML = 
-                        "Доступ к геолокации запрещен";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    document.getElementById('sosLocation').innerHTML = 
-                        "Информация о местоположении недоступна";
-                    break;
-                case error.TIMEOUT:
-                    document.getElementById('sosLocation').innerHTML = 
-                        "Время ожидания истекло";
-                    break;
-                default:
-                    document.getElementById('sosLocation').innerHTML = 
-                        "Произошла неизвестная ошибка";
-            }
-        }
-        
-        // Обработка SOS сигнала
-        document.getElementById('confirmSos').addEventListener('click', function() {
-            showAlert('SOS сигнал отправлен! Помощь в пути!');
-            setTimeout(() => {
-                closeModal('sosModal');
-            }, 2000);
-        });
-        
-        // Чат поддержки
-        document.getElementById('sendMessage').addEventListener('click', function() {
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
-            
-            if (message) {
+        // Функция для гарантированной работы в мобильном Telegram
+        function initApp() {
+            // Инициализация часов
+            function updateClock() {
                 const now = new Date();
-                const time = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+                const time = now.toLocaleTimeString('ru-RU');
+                const date = now.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
                 
-                const messageElement = document.createElement('div');
-                messageElement.className = 'message message-outgoing';
-                messageElement.innerHTML = `
-                    <div>${message}</div>
-                    <div class="message-time">${time}</div>
+                document.getElementById('clock').textContent = time;
+                document.getElementById('date').textContent = date;
+            }
+            
+            setInterval(updateClock, 1000);
+            updateClock();
+            
+            // Функция для показа зелёных сообщений
+            function showAlert(message) {
+                const oldAlert = document.getElementById('custom-alert');
+                if(oldAlert) oldAlert.remove();
+                
+                const alertBox = document.createElement('div');
+                alertBox.id = 'custom-alert';
+                alertBox.textContent = message;
+                alertBox.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #4CAF50;
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    animation: fadeIn 0.3s;
                 `;
                 
-                document.getElementById('chatMessages').appendChild(messageElement);
-                messageInput.value = '';
+                document.body.appendChild(alertBox);
                 
-                // Автоответ
                 setTimeout(() => {
-                    const responses = [
-                        "Спасибо за сообщение, мы решим ваш вопрос",
-                        "Ваш запрос принят в обработку",
-                        "Специалист уже решает вашу проблему",
-                        "Благодарим за обращение"
-                    ];
+                    alertBox.style.animation = 'fadeOut 0.5s';
+                    setTimeout(() => alertBox.remove(), 500);
+                }, 2000);
+            }
+            
+            // Функции для работы с модальными окнами
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'flex';
+            }
+            
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+            
+            // Инициализация модальных окон
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    modal.style.display = 'none';
+                });
+            });
+            
+            // Обработчики для кнопок открытия модальных окон
+            document.getElementById('sosBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('sosModal');
+                getLocation();
+            });
+            
+            document.getElementById('reportsBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('reportsModal');
+            });
+            
+            document.getElementById('chatBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('chatModal');
+            });
+            
+            document.getElementById('helpBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('helpModal');
+            });
+            
+            document.getElementById('suppliesBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('suppliesModal');
+            });
+            
+            document.getElementById('teamBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('teamModal');
+            });
+            
+            document.getElementById('settingsBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                openModal('settingsModal');
+            });
+            
+            // Определение местоположения для SOS
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        showPosition,
+                        showError,
+                        { timeout: 10000 }
+                    );
+                } else {
+                    document.getElementById('sosLocation').innerHTML = 
+                        "Геолокация не поддерживается вашим устройством";
+                }
+            }
+            
+            function showPosition(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                document.getElementById('sosLocation').innerHTML = 
+                    `Широта: ${lat.toFixed(6)}<br>Долгота: ${lon.toFixed(6)}`;
+            }
+            
+            function showError(error) {
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        document.getElementById('sosLocation').innerHTML = 
+                            "Доступ к геолокации запрещен";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        document.getElementById('sosLocation').innerHTML = 
+                            "Информация о местоположении недоступна";
+                        break;
+                    case error.TIMEOUT:
+                        document.getElementById('sosLocation').innerHTML = 
+                            "Время ожидания истекло";
+                        break;
+                    default:
+                        document.getElementById('sosLocation').innerHTML = 
+                            "Произошла неизвестная ошибка";
+                }
+            }
+            
+            // Обработка SOS сигнала
+            document.getElementById('confirmSos').addEventListener('click', function() {
+                showAlert('SOS сигнал отправлен! Помощь в пути!');
+                setTimeout(() => {
+                    closeModal('sosModal');
+                }, 2000);
+            });
+            
+            // Чат поддержки
+            document.getElementById('sendMessage').addEventListener('click', function() {
+                const messageInput = document.getElementById('messageInput');
+                const message = messageInput.value.trim();
+                
+                if (message) {
+                    const now = new Date();
+                    const time = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
                     
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    
-                    const responseElement = document.createElement('div');
-                    responseElement.className = 'message message-incoming';
-                    responseElement.innerHTML = `
-                        <div>${randomResponse}</div>
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'message message-outgoing';
+                    messageElement.innerHTML = `
+                        <div>${message}</div>
                         <div class="message-time">${time}</div>
                     `;
                     
-                    document.getElementById('chatMessages').appendChild(responseElement);
-                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-                }, 2000);
-                
-                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-            }
-        });
-        
-        // Помощь и FAQ
-        window.showFaqAnswer = function() {
-            const faqSelect = document.getElementById('faqSelect');
-            const answerDiv = document.getElementById('faqAnswer');
-            
-            const answers = {
-                "1": "Для оформления возврата: 1. Проверьте состояние товара 2. Заполните форму возврата 3. Передайте посылку курьеру",
-                "2": "Если клиент не пришел: 1. Позвоните клиенту 2. Оставьте уведомление 3. Перенесите выдачу на другой день",
-                "3": "При поврежденной посылке: 1. Сфотографируйте повреждения 2. Сообщите клиенту 3. Оформите акт о повреждении",
-                "4": "Для изменения графика: 1. Обратитесь к руководителю 2. Заполните форму запроса 3. Дождитесь подтверждения"
-            };
-            
-            answerDiv.innerHTML = answers[faqSelect.value] || "Выберите вопрос из списка";
-        }
-        
-        // Кнопка "На пункте"
-        const checkinBtn = document.getElementById('checkinBtn');
-        let isCheckedIn = false;
-        
-        checkinBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (!isCheckedIn) {
-                Telegram.WebApp.showPopup({
-                    title: 'Подтверждение',
-                    message: 'Разрешить доступ к вашему местоположению для отметки?',
-                    buttons: [
-                        {id: 'yes', type: 'default', text: '✅ Разрешить'},
-                        {id: 'no', type: 'destructive', text: '❌ Отмена'}
-                    ]
-                }, function(btnId) {
-                    if(btnId === 'yes') {
-                        navigator.geolocation.getCurrentPosition(
-                            function(position) {
-                                isCheckedIn = true;
-                                checkinBtn.classList.add('active');
-                                checkinBtn.querySelector('.action-label').textContent = 'Закрыть';
-                                showAlert('Вы успешно отметились на пункте!');
-                            },
-                            function(error) {
-                                showAlert('Ошибка: ' + error.message);
-                            }
-                        );
-                    }
-                });
-            } else {
-                Telegram.WebApp.showPopup({
-                    title: 'Завершение смены',
-                    message: 'Вы действительно хотите закрыть пункт?',
-                    buttons: [
-                        {id: 'yes', type: 'destructive', text: '✅ Да, закрыть'},
-                        {id: 'no', type: 'default', text: '❌ Отмена'}
-                    ]
-                }, function(btnId) {
-                    if(btnId === 'yes') {
-                        navigator.geolocation.getCurrentPosition(
-                            function(position) {
-                                isCheckedIn = false;
-                                checkinBtn.classList.remove('active');
-                                checkinBtn.querySelector('.action-label').textContent = 'На пункте';
-                                showAlert('Пункт успешно закрыт! Хорошего отдыха!');
-                            },
-                            function(error) {
-                                showAlert('Ошибка: ' + error.message);
-                            }
-                        );
-                    }
-                });
-            }
-        });
-        
-        // Кнопка выхода
-        document.querySelector('.logout-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            Telegram.WebApp.showPopup({
-                title: 'Подтверждение выхода',
-                message: 'Вы уверены, что хотите выйти?',
-                buttons: [
-                    {id: 'yes', type: 'destructive', text: 'Выйти'},
-                    {id: 'no', type: 'cancel'}
-                ]
-            }, function(btnId) {
-                if(btnId === 'yes') {
-                    document.body.innerHTML = `
-                        <div style="text-align:center;padding:50px 20px">
-                            <h1>🚪 Вы вышли из системы</h1>
-                            <p>Для возврата обратитесь к администратору</p>
-                            <input type="text" id="accessCode" placeholder="Введите код доступа" 
-                                style="padding:15px; margin:20px; width:80%; border-radius:15px">
-                            <button onclick="checkAccessCode()" 
-                                style="padding:15px 30px; background:#4CAF50; color:white; border:none; border-radius:15px">
-                                Войти
-                            </button>
-                        </div>
-                    `;
+                    document.getElementById('chatMessages').appendChild(messageElement);
+                    messageInput.value = '';
                     
-                    window.checkAccessCode = function() {
-                        const code = document.getElementById('accessCode').value;
-                        if(code === "2024") {
-                            location.reload();
-                        } else {
-                            showAlert('Неверный код доступа!');
-                        }
-                    }
+                    // Автоответ
+                    setTimeout(() => {
+                        const responses = [
+                            "Спасибо за сообщение, мы решим ваш вопрос",
+                            "Ваш запрос принят в обработку",
+                            "Специалист уже решает вашу проблему",
+                            "Благодарим за обращение"
+                        ];
+                        
+                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                        
+                        const responseElement = document.createElement('div');
+                        responseElement.className = 'message message-incoming';
+                        responseElement.innerHTML = `
+                            <div>${randomResponse}</div>
+                            <div class="message-time">${time}</div>
+                        `;
+                        
+                        document.getElementById('chatMessages').appendChild(responseElement);
+                        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                    }, 2000);
+                    
+                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
                 }
             });
-        });
+            
+            // Помощь и FAQ
+            window.showFaqAnswer = function() {
+                const faqSelect = document.getElementById('faqSelect');
+                const answerDiv = document.getElementById('faqAnswer');
+                
+                const answers = {
+                    "1": "Для оформления возврата: 1. Проверьте состояние товара 2. Заполните форму возврата 3. Передайте посылку курьеру",
+                    "2": "Если клиент не пришел: 1. Позвоните клиенту 2. Оставьте уведомление 3. Перенесите выдачу на другой день",
+                    "3": "При поврежденной посылке: 1. Сфотографируйте повреждения 2. Сообщите клиенту 3. Оформите акт о повреждении",
+                    "4": "Для изменения графика: 1. Обратитесь к руководителю 2. Заполните форму запроса 3. Дождитесь подтверждения"
+                };
+                
+                answerDiv.innerHTML = answers[faqSelect.value] || "Выберите вопрос из списка";
+            }
+            
+            // Кнопка "На пункте"
+            const checkinBtn = document.getElementById('checkinBtn');
+            let isCheckedIn = false;
+            
+            checkinBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                if (!isCheckedIn) {
+                    Telegram.WebApp.showPopup({
+                        title: 'Подтверждение',
+                        message: 'Разрешить доступ к вашему местоположению для отметки?',
+                        buttons: [
+                            {id: 'yes', type: 'default', text: '✅ Разрешить'},
+                            {id: 'no', type: 'destructive', text: '❌ Отмена'}
+                        ]
+                    }, function(btnId) {
+                        if(btnId === 'yes') {
+                            navigator.geolocation.getCurrentPosition(
+                                function(position) {
+                                    isCheckedIn = true;
+                                    checkinBtn.classList.add('active');
+                                    checkinBtn.querySelector('.action-label').textContent = 'Закрыть';
+                                    showAlert('Вы успешно отметились на пункте!');
+                                },
+                                function(error) {
+                                    showAlert('Ошибка: ' + error.message);
+                                }
+                            );
+                        }
+                    });
+                } else {
+                    Telegram.WebApp.showPopup({
+                        title: 'Завершение смены',
+                        message: 'Вы действительно хотите закрыть пункт?',
+                        buttons: [
+                            {id: 'yes', type: 'destructive', text: '✅ Да, закрыть'},
+                            {id: 'no', type: 'default', text: '❌ Отмена'}
+                        ]
+                    }, function(btnId) {
+                        if(btnId === 'yes') {
+                            navigator.geolocation.getCurrentPosition(
+                                function(position) {
+                                    isCheckedIn = false;
+                                    checkinBtn.classList.remove('active');
+                                    checkinBtn.querySelector('.action-label').textContent = 'На пункте';
+                                    showAlert('Пункт успешно закрыт! Хорошего отдыха!');
+                                },
+                                function(error) {
+                                    showAlert('Ошибка: ' + error.message);
+                                }
+                            );
+                        }
+                    });
+                }
+            });
+            
+            // Кнопка выхода
+            document.querySelector('.logout-btn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                Telegram.WebApp.showPopup({
+                    title: 'Подтверждение выхода',
+                    message: 'Вы уверены, что хотите выйти?',
+                    buttons: [
+                        {id: 'yes', type: 'destructive', text: 'Выйти'},
+                        {id: 'no', type: 'cancel'}
+                    ]
+                }, function(btnId) {
+                    if(btnId === 'yes') {
+                        document.body.innerHTML = `
+                            <div style="text-align:center;padding:50px 20px">
+                                <h1>🚪 Вы вышли из системы</h1>
+                                <p>Для возврата обратитесь к администратору</p>
+                                <input type="text" id="accessCode" placeholder="Введите код доступа" 
+                                    style="padding:15px; margin:20px; width:80%; border-radius:15px">
+                                <button onclick="checkAccessCode()" 
+                                    style="padding:15px 30px; background:#4CAF50; color:white; border:none; border-radius:15px">
+                                    Войти
+                                </button>
+                            </div>
+                        `;
+                        
+                        window.checkAccessCode = function() {
+                            const code = document.getElementById('accessCode').value;
+                            if(code === "2024") {
+                                location.reload();
+                            } else {
+                                showAlert('Неверный код доступа!');
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Запуск приложения после полной загрузки страницы
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
