@@ -1,1 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Помощь</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff00ff 0%, #3300ff 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: -1;
+            border-radius: 30px;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-bottom: 15px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .user-info {
+            font-size: 18px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .help-categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .help-category {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .help-category:hover {
+            transform: translateY(-5px);
+        }
+        
+        .help-category-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .help-category-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button class="back-btn" onclick="location.href='index.html'">←</button>
+        <div class="user-info">База знаний</div>
+    </div>
+    
+    <div class="help-categories">
+        <div class="help-category">
+            <div class="help-category-icon">📋</div>
+            <div class="help-category-title">Инструкции</div>
+        </div>
+        
+        <div class="help-category">
+            <div class="help-category-icon">📞</div>
+            <div class="help-category-title">Контакты</div>
+        </div>
+        
+        <div class="help-category">
+            <div class="help-category-icon">❓</div>
+            <div class="help-category-title">FAQ</div>
+        </div>
+        
+        <div class="help-category">
+            <div class="help-category-icon">📚</div>
+            <div class="help-category-title">Обучение</div>
+        </div>
+        
+        <div class="help-category">
+            <div class="help-category-icon">⚖️</div>
+            <div class="help-category-title">Юр. информация</div>
+        </div>
+        
+        <div class="help-category">
+            <div class="help-category-icon">📅</div>
+            <div class="help-category-title">График работы</div>
+        </div>
+    </div>
 
+    <script>
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        
+        document.querySelectorAll('.help-category').forEach(category => {
+            category.addEventListener('click', function() {
+                const title = this.querySelector('.help-category-title').textContent;
+                Telegram.WebApp.showAlert(`Открыт раздел: ${title}`);
+            });
+        });
+    </script>
+</body>
+</html>
