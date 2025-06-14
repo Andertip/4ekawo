@@ -6,7 +6,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Все ваши стили остаются без изменений */
         * {
             margin: 0;
             padding: 0;
@@ -14,7 +13,315 @@
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
-        /* ... остальные стили ... */
+        body {
+            background: linear-gradient(135deg, #ff00ff 0%, #3300ff 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: -1;
+            border-radius: 30px;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-bottom: 15px;
+        }
+        
+        .user-info {
+            font-size: 16px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            max-width: 70%;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .glass-card {
+            background: rgba(173, 216, 230, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-header {
+            grid-column: span 7;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .day-name {
+            text-align: center;
+            font-size: 12px;
+            opacity: 0.8;
+            padding: 4px 0;
+        }
+        
+        .day {
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 50%;
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .day.workday::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: #00ff00;
+            border-radius: 50%;
+        }
+        
+        .day.current {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .notice-board {
+            background: #1a5e25;
+            border: 3px solid #5d4037;
+            border-radius: 10px;
+            padding: 12px;
+            position: relative;
+            font-family: 'Chalkboard', 'Comic Sans MS', cursive;
+            min-height: 120px;
+        }
+        
+        .notice-board::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                transparent,
+                transparent 18px,
+                rgba(0,0,0,0.1) 20px
+            );
+            pointer-events: none;
+            border-radius: 7px;
+        }
+        
+        .notice-title {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #ff5555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .notice-content {
+            font-size: 16px;
+            line-height: 1.4;
+            color: white;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .notice-content .important {
+            color: #ff5555;
+            font-weight: bold;
+        }
+        
+        .clock-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .clock-display {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+            font-family: 'Digital', monospace;
+        }
+        
+        .date-display {
+            font-size: 16px;
+            opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(145deg, #6a5acd, #9370db);
+            border: none;
+            border-radius: 16px;
+            padding: 20px 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 
+                0 6px 12px rgba(0,0,0,0.2),
+                inset 0 -4px 8px rgba(0,0,0,0.3),
+                inset 0 4px 8px rgba(255,255,255,0.2);
+            position: relative;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255,255,255,0.3), 
+                rgba(255,255,255,0.1) 20%,
+                transparent
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
+        .action-btn:active {
+            box-shadow: 
+                0 2px 4px rgba(0,0,0,0.2),
+                inset 0 -2px 4px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.2);
+            transform: translateY(3px);
+        }
+        
+        .action-btn.active {
+            background: linear-gradient(145deg, #ff5555, #ff0000);
+        }
+        
+        .action-label {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        
+        .top-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-container {
+            flex: 2;
+        }
+        
+        .side-buttons {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .side-btn {
+            background: linear-gradient(145deg, #48c774, #00d1b2);
+            border: none;
+            border-radius: 16px;
+            padding: 15px 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.2),
+                inset 0 -4px 8px rgba(0,0,0,0.3),
+                inset 0 4px 8px rgba(255,255,255,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .side-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255,255,255,0.3), 
+                rgba(255,255,255,0.1) 20%,
+                transparent
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
+        .side-btn-label {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
         
         /* Стили для зелёных уведомлений */
         #custom-alert {
@@ -40,338 +347,853 @@
             from { opacity: 1; top: 20px; }
             to { opacity: 0; top: 0; }
         }
+        
+        /* Стили для модальных окон */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: #333;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .modal-section {
+            margin-bottom: 20px;
+        }
+        
+        .modal-section h3 {
+            margin-bottom: 10px;
+            color: #6a5acd;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            background: #6a5acd;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        
+        .message-incoming {
+            background: #e6e6e6;
+            margin-right: auto;
+        }
+        
+        .message-outgoing {
+            background: #6a5acd;
+            color: white;
+            margin-left: auto;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            text-align: right;
+            margin-top: 3px;
+        }
+        
+        .supply-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .team-member {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .team-member img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .stat-card {
+            background: #f0f4ff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a5acd;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-    <!-- Весь ваш HTML остается без изменений -->
     <div class="top-bar">
         <div class="user-info">Оператор ПВЗ: Иван Иванов</div>
         <button class="logout-btn">🚪</button>
     </div>
     
-    <!-- ... остальной HTML ... -->
+    <div class="top-container">
+        <div class="calendar-container glass-card">
+            <div class="calendar">
+                <div class="calendar-header">Июнь 2024</div>
+                <div class="day-name">Пн</div>
+                <div class="day-name">Вт</div>
+                <div class="day-name">Ср</div>
+                <div class="day-name">Чт</div>
+                <div class="day-name">Пт</div>
+                <div class="day-name">Сб</div>
+                <div class="day-name">Вс</div>
+                
+                <div class="day">27</div>
+                <div class="day">28</div>
+                <div class="day">29</div>
+                <div class="day">30</div>
+                <div class="day">31</div>
+                <div class="day">1</div>
+                <div class="day">2</div>
+                
+                <div class="day workday">3</div>
+                <div class="day workday">4</div>
+                <div class="day workday">5</div>
+                <div class="day workday">6</div>
+                <div class="day workday">7</div>
+                <div class="day">8</div>
+                <div class="day">9</div>
+                
+                <div class="day workday">10</div>
+                <div class="day workday">11</div>
+                <div class="day workday">12</div>
+                <div class="day workday">13</div>
+                <div class="day workday">14</div>
+                <div class="day">15</div>
+                <div class="day">16</div>
+                
+                <div class="day workday">17</div>
+                <div class="day workday">18</div>
+                <div class="day workday current">19</div>
+                <div class="day workday">20</div>
+                <div class="day workday">21</div>
+                <div class="day">22</div>
+                <div class="day">23</div>
+            </div>
+        </div>
+        
+        <div class="side-buttons">
+            <button class="side-btn" id="sosBtn">
+                🆘
+                <span class="side-btn-label">SOS</span>
+            </button>
+            <button class="side-btn" id="reportsBtn">
+                📈
+                <span class="side-btn-label">Отчёты</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <div class="notice-board">
+            <div class="notice-title">Важные объявления</div>
+            <div class="notice-content">
+                • Завтра <span class="important">инвентаризация</span> на всех ПВЗ Ozon<br>
+                • Wildberries: новые правила упаковки с 1 июля<br>
+                • <span class="important">Срочно!</span> ПВЗ Ozon-15: заканчиваются пакеты<br>
+                • Обучение для новых операторов в пятницу
+            </div>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <div class="clock-widget">
+            <div class="clock-display" id="clock">10:45:27</div>
+            <div class="date-display" id="date">26 июня 2024</div>
+        </div>
+    </div>
+    
+    <div class="actions-grid">
+        <button class="action-btn" id="checkinBtn">
+            📍
+            <span class="action-label">На пункте</span>
+        </button>
+        
+        <button class="action-btn" id="chatBtn">
+            💬
+            <span class="action-label">Чат</span>
+        </button>
+        
+        <button class="action-btn" id="helpBtn">
+            ❓
+            <span class="action-label">Помощь</span>
+        </button>
+        
+        <button class="action-btn" id="suppliesBtn">
+            📦
+            <span class="action-label">Расходники</span>
+        </button>
+        
+        <button class="action-btn" id="teamBtn">
+            👥
+            <span class="action-label">Команда</span>
+        </button>
+        
+        <button class="action-btn" id="settingsBtn">
+            ⚙️
+            <span class="action-label">Настройки</span>
+        </button>
+    </div>
+    
+    <!-- Модальные окна для каждого раздела -->
+    <div class="modal" id="sosModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Экстренная помощь</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <p>Ваше местоположение будет отправлено службе безопасности</p>
+                <div id="sosLocation">Определение местоположения...</div>
+            </div>
+            <button class="btn" id="confirmSos">Отправить SOS сигнал</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="chatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Чат поддержки</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message message-incoming">
+                    <div>Здравствуйте! Чем могу помочь?</div>
+                    <div class="message-time">10:30</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <textarea id="messageInput" placeholder="Введите сообщение..." rows="2"></textarea>
+            </div>
+            <button class="btn" id="sendMessage">Отправить</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Настройки профиля</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Личные данные</h3>
+                <div class="form-group">
+                    <label>Имя оператора</label>
+                    <input type="text" value="Иван Иванов">
+                </div>
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" value="+7 (900) 123-45-67">
+                </div>
+            </div>
+            <div class="modal-section">
+                <h3>Настройки приложения</h3>
+                <div class="form-group">
+                    <label>Уведомления</label>
+                    <select>
+                        <option>Все включены</option>
+                        <option>Только важные</option>
+                        <option>Выключены</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Тема оформления</label>
+                    <select>
+                        <option>Стандартная</option>
+                        <option>Тёмная</option>
+                        <option>Контрастная</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn">Сохранить изменения</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="reportsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Отчёты и статистика</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">124</div>
+                        <div class="stat-label">Посылок за день</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">87</div>
+                        <div class="stat-label">Выдано за день</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Возвраты</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">96%</div>
+                        <div class="stat-label">Удовлетворённость</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-section">
+                <h3>Сформировать отчёт</h3>
+                <div class="form-group">
+                    <label>Период</label>
+                    <select>
+                        <option>За сегодня</option>
+                        <option>За неделю</option>
+                        <option>За месяц</option>
+                        <option>Произвольный период</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Тип отчёта</label>
+                    <select>
+                        <option>Основная статистика</option>
+                        <option>Финансовый отчёт</option>
+                        <option>Аналитика по клиентам</option>
+                    </select>
+                </div>
+                <button class="btn">Сформировать отчёт</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="teamModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Команда пункта</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <div class="team-member">
+                    <div style="background:#6a5acd;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">ИИ</div>
+                    <div>
+                        <div><strong>Иван Иванов</strong></div>
+                        <div>Старший оператор</div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div style="background:#48c774;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">МП</div>
+                    <div>
+                        <div><strong>Мария Петрова</strong></div>
+                        <div>Оператор</div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div style="background:#ff5555;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">АС</div>
+                    <div>
+                        <div><strong>Алексей Сидоров</strong></div>
+                        <div>Курьер</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-section">
+                <h3>Добавить сотрудника</h3>
+                <div class="form-group">
+                    <label>ФИО</label>
+                    <input type="text" placeholder="Введите полное имя">
+                </div>
+                <div class="form-group">
+                    <label>Должность</label>
+                    <input type="text" placeholder="Введите должность">
+                </div>
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" placeholder="Введите номер телефона">
+                </div>
+                <button class="btn">Добавить сотрудника</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="suppliesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Учёт расходников</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <div class="supply-item">
+                    <div>Пакеты (средние)</div>
+                    <div><strong>42 шт</strong></div>
+                </div>
+                <div class="supply-item">
+                    <div>Пакеты (большие)</div>
+                    <div><strong>18 шт</strong></div>
+                </div>
+                <div class="supply-item">
+                    <div>Скотч</div>
+                    <div><strong>7 шт</strong></div>
+                </div>
+                <div class="supply-item">
+                    <div>Этикетки</div>
+                    <div><strong>3 пачки</strong></div>
+                </div>
+                <div class="supply-item">
+                    <div>Антистресс-игрушки</div>
+                    <div><strong>12 шт</strong></div>
+                </div>
+            </div>
+            <div class="modal-section">
+                <h3>Добавить расходники</h3>
+                <div class="form-group">
+                    <label>Тип материала</label>
+                    <select>
+                        <option>Пакеты (средние)</option>
+                        <option>Пакеты (большие)</option>
+                        <option>Скотч</option>
+                        <option>Этикетки</option>
+                        <option>Антистресс-игрушки</option>
+                        <option>Другое</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Количество</label>
+                    <input type="number" value="1">
+                </div>
+                <button class="btn">Добавить в учёт</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Помощь и инструкции</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Частые вопросы</h3>
+                <div class="form-group">
+                    <select id="faqSelect" onchange="showFaqAnswer()">
+                        <option value="">Выберите вопрос</option>
+                        <option value="1">Как оформить возврат?</option>
+                        <option value="2">Что делать, если клиент не пришел?</option>
+                        <option value="3">Как работать с повреждённой посылкой?</option>
+                        <option value="4">Как изменить график работы?</option>
+                    </select>
+                </div>
+                <div id="faqAnswer" style="padding:10px;border:1px solid #eee;border-radius:10px;min-height:100px;margin-top:10px;">
+                    Выберите вопрос из списка
+                </div>
+            </div>
+            <div class="modal-section">
+                <h3>Экстренные контакты</h3>
+                <div style="margin-top:10px;">
+                    <p><strong>Техподдержка:</strong> +7 (800) 123-45-67</p>
+                    <p><strong>Безопасность:</strong> +7 (800) 765-43-21</p>
+                    <p><strong>Руководство:</strong> +7 (900) 555-44-33</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Инициализация Telegram WebApp - ДОБАВЛЕНО РАННЕЕ ВЫПОЛНЕНИЕ
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
         
-        // Функция для гарантированной работы в мобильном Telegram
-        function initApp() {
-            // Инициализация часов
-            function updateClock() {
-                const now = new Date();
-                const time = now.toLocaleTimeString('ru-RU');
-                const date = now.toLocaleDateString('ru-RU', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                });
-                
-                document.getElementById('clock').textContent = time;
-                document.getElementById('date').textContent = date;
+        // Инициализация часов
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('ru-RU');
+            const date = now.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            document.getElementById('clock').textContent = time;
+            document.getElementById('date').textContent = date;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Функция для показа зелёных сообщений
+        function showAlert(message) {
+            // Убираем старые сообщения если есть
+            const oldAlert = document.getElementById('custom-alert');
+            if(oldAlert) oldAlert.remove();
+            
+            // Создаем красивое сообщение
+            const alertBox = document.createElement('div');
+            alertBox.id = 'custom-alert';
+            alertBox.textContent = message;
+            alertBox.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #4CAF50;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 5px;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: fadeIn 0.3s;
+            `;
+            
+            document.body.appendChild(alertBox);
+            
+            // Автоматически скрываем через 2 секунды
+            setTimeout(() => {
+                alertBox.style.animation = 'fadeOut 0.5s';
+                setTimeout(() => alertBox.remove(), 500);
+            }, 2000);
+        }
+        
+        // Функции для работы с модальными окнами
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Инициализация модальных окон
+        document.querySelectorAll('.close-modal').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                modal.style.display = 'none';
+            });
+        });
+        
+        // Обработчики для кнопок открытия модальных окон
+        document.getElementById('sosBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('sosModal');
+            getLocation();
+        });
+        
+        document.getElementById('reportsBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('reportsModal');
+        });
+        
+        document.getElementById('chatBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('chatModal');
+        });
+        
+        document.getElementById('helpBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('helpModal');
+        });
+        
+        document.getElementById('suppliesBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('suppliesModal');
+        });
+        
+        document.getElementById('teamBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('teamModal');
+        });
+        
+        document.getElementById('settingsBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('settingsModal');
+        });
+        
+        // Определение местоположения для SOS
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    showPosition,
+                    showError,
+                    { timeout: 10000 }
+                );
+            } else {
+                document.getElementById('sosLocation').innerHTML = 
+                    "Геолокация не поддерживается вашим устройством";
             }
+        }
+        
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            document.getElementById('sosLocation').innerHTML = 
+                `Широта: ${lat.toFixed(6)}<br>Долгота: ${lon.toFixed(6)}`;
+        }
+        
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById('sosLocation').innerHTML = 
+                        "Доступ к геолокации запрещен";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById('sosLocation').innerHTML = 
+                        "Информация о местоположении недоступна";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById('sosLocation').innerHTML = 
+                        "Время ожидания истекло";
+                    break;
+                default:
+                    document.getElementById('sosLocation').innerHTML = 
+                        "Произошла неизвестная ошибка";
+            }
+        }
+        
+        // Обработка SOS сигнала
+        document.getElementById('confirmSos').addEventListener('click', function() {
+            showAlert('SOS сигнал отправлен! Помощь в пути!');
+            setTimeout(() => {
+                closeModal('sosModal');
+            }, 2000);
+        });
+        
+        // Чат поддержки
+        document.getElementById('sendMessage').addEventListener('click', function() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
             
-            setInterval(updateClock, 1000);
-            updateClock();
-            
-            // Функция для показа зелёных сообщений
-            function showAlert(message) {
-                const oldAlert = document.getElementById('custom-alert');
-                if(oldAlert) oldAlert.remove();
+            if (message) {
+                const now = new Date();
+                const time = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
                 
-                const alertBox = document.createElement('div');
-                alertBox.id = 'custom-alert';
-                alertBox.textContent = message;
-                alertBox.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: #4CAF50;
-                    color: white;
-                    padding: 15px 25px;
-                    border-radius: 5px;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                    z-index: 1000;
-                    animation: fadeIn 0.3s;
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message message-outgoing';
+                messageElement.innerHTML = `
+                    <div>${message}</div>
+                    <div class="message-time">${time}</div>
                 `;
                 
-                document.body.appendChild(alertBox);
+                document.getElementById('chatMessages').appendChild(messageElement);
+                messageInput.value = '';
                 
+                // Автоответ
                 setTimeout(() => {
-                    alertBox.style.animation = 'fadeOut 0.5s';
-                    setTimeout(() => alertBox.remove(), 500);
-                }, 2000);
-            }
-            
-            // Функции для работы с модальными окнами
-            function openModal(modalId) {
-                document.getElementById(modalId).style.display = 'flex';
-            }
-            
-            function closeModal(modalId) {
-                document.getElementById(modalId).style.display = 'none';
-            }
-            
-            // Инициализация модальных окон
-            document.querySelectorAll('.close-modal').forEach(button => {
-                button.addEventListener('click', function() {
-                    const modal = this.closest('.modal');
-                    modal.style.display = 'none';
-                });
-            });
-            
-            // Обработчики для кнопок открытия модальных окон - ДОБАВЛЕНО stopPropagation
-            document.getElementById('sosBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                openModal('sosModal');
-                getLocation();
-            });
-            
-            document.getElementById('reportsBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                openModal('reportsModal');
-            });
-            
-            document.getElementById('chatBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                openModal('chatModal');
-            });
-            
-            document.getElementById('helpBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                openModal('helpModal');
-            });
-            
-            document.getElementById('suppliesBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                openModal('suppliesModal');
-            });
-            
-            document.getElementById('teamBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                openModal('teamModal');
-            });
-            
-            document.getElementById('settingsBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                openModal('settingsModal');
-            });
-            
-            // Определение местоположения для SOS
-            function getLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        showPosition,
-                        showError,
-                        { timeout: 10000 }
-                    );
-                } else {
-                    document.getElementById('sosLocation').innerHTML = 
-                        "Геолокация не поддерживается вашим устройством";
-                }
-            }
-            
-            function showPosition(position) {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                document.getElementById('sosLocation').innerHTML = 
-                    `Широта: ${lat.toFixed(6)}<br>Долгота: ${lon.toFixed(6)}`;
-            }
-            
-            function showError(error) {
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        document.getElementById('sosLocation').innerHTML = 
-                            "Доступ к геолокации запрещен";
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        document.getElementById('sosLocation').innerHTML = 
-                            "Информация о местоположении недоступна";
-                        break;
-                    case error.TIMEOUT:
-                        document.getElementById('sosLocation').innerHTML = 
-                            "Время ожидания истекло";
-                        break;
-                    default:
-                        document.getElementById('sosLocation').innerHTML = 
-                            "Произошла неизвестная ошибка";
-                }
-            }
-            
-            // Обработка SOS сигнала
-            document.getElementById('confirmSos').addEventListener('click', function() {
-                showAlert('SOS сигнал отправлен! Помощь в пути!');
-                setTimeout(() => {
-                    closeModal('sosModal');
-                }, 2000);
-            });
-            
-            // Чат поддержки
-            document.getElementById('sendMessage').addEventListener('click', function() {
-                const messageInput = document.getElementById('messageInput');
-                const message = messageInput.value.trim();
-                
-                if (message) {
-                    const now = new Date();
-                    const time = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+                    const responses = [
+                        "Спасибо за сообщение, мы решим ваш вопрос",
+                        "Ваш запрос принят в обработку",
+                        "Специалист уже решает вашу проблему",
+                        "Благодарим за обращение"
+                    ];
                     
-                    const messageElement = document.createElement('div');
-                    messageElement.className = 'message message-outgoing';
-                    messageElement.innerHTML = `
-                        <div>${message}</div>
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    const responseElement = document.createElement('div');
+                    responseElement.className = 'message message-incoming';
+                    responseElement.innerHTML = `
+                        <div>${randomResponse}</div>
                         <div class="message-time">${time}</div>
                     `;
                     
-                    document.getElementById('chatMessages').appendChild(messageElement);
-                    messageInput.value = '';
-                    
-                    // Автоответ
-                    setTimeout(() => {
-                        const responses = [
-                            "Спасибо за сообщение, мы решим ваш вопрос",
-                            "Ваш запрос принят в обработку",
-                            "Специалист уже решает вашу проблему",
-                            "Благодарим за обращение"
-                        ];
-                        
-                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                        
-                        const responseElement = document.createElement('div');
-                        responseElement.className = 'message message-incoming';
-                        responseElement.innerHTML = `
-                            <div>${randomResponse}</div>
-                            <div class="message-time">${time}</div>
-                        `;
-                        
-                        document.getElementById('chatMessages').appendChild(responseElement);
-                        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-                    }, 2000);
-                    
+                    document.getElementById('chatMessages').appendChild(responseElement);
                     document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-                }
-            });
-            
-            // Помощь и FAQ
-            window.showFaqAnswer = function() {
-                const faqSelect = document.getElementById('faqSelect');
-                const answerDiv = document.getElementById('faqAnswer');
+                }, 2000);
                 
-                const answers = {
-                    "1": "Для оформления возврата: 1. Проверьте состояние товара 2. Заполните форму возврата 3. Передайте посылку курьеру",
-                    "2": "Если клиент не пришел: 1. Позвоните клиенту 2. Оставьте уведомление 3. Перенесите выдачу на другой день",
-                    "3": "При поврежденной посылке: 1. Сфотографируйте повреждения 2. Сообщите клиенту 3. Оформите акт о повреждении",
-                    "4": "Для изменения графика: 1. Обратитесь к руководителю 2. Заполните форму запроса 3. Дождитесь подтверждения"
-                };
-                
-                answerDiv.innerHTML = answers[faqSelect.value] || "Выберите вопрос из списка";
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
             }
+        });
+        
+        // Помощь и FAQ
+        window.showFaqAnswer = function() {
+            const faqSelect = document.getElementById('faqSelect');
+            const answerDiv = document.getElementById('faqAnswer');
             
-            // Кнопка "На пункте"
-            const checkinBtn = document.getElementById('checkinBtn');
-            let isCheckedIn = false;
+            const answers = {
+                "1": "Для оформления возврата: 1. Проверьте состояние товара 2. Заполните форму возврата 3. Передайте посылку курьеру",
+                "2": "Если клиент не пришел: 1. Позвоните клиенту 2. Оставьте уведомление 3. Перенесите выдачу на другой день",
+                "3": "При поврежденной посылке: 1. Сфотографируйте повреждения 2. Сообщите клиенту 3. Оформите акт о повреждении",
+                "4": "Для изменения графика: 1. Обратитесь к руководителю 2. Заполните форму запроса 3. Дождитесь подтверждения"
+            };
             
-            checkinBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                if (!isCheckedIn) {
-                    Telegram.WebApp.showPopup({
-                        title: 'Подтверждение',
-                        message: 'Разрешить доступ к вашему местоположению для отметки?',
-                        buttons: [
-                            {id: 'yes', type: 'default', text: '✅ Разрешить'},
-                            {id: 'no', type: 'destructive', text: '❌ Отмена'}
-                        ]
-                    }, function(btnId) {
-                        if(btnId === 'yes') {
-                            navigator.geolocation.getCurrentPosition(
-                                function(position) {
-                                    isCheckedIn = true;
-                                    checkinBtn.classList.add('active');
-                                    checkinBtn.querySelector('.action-label').textContent = 'Закрыть';
-                                    showAlert('Вы успешно отметились на пункте!');
-                                },
-                                function(error) {
-                                    showAlert('Ошибка: ' + error.message);
-                                }
-                            );
-                        }
-                    });
-                } else {
-                    Telegram.WebApp.showPopup({
-                        title: 'Завершение смены',
-                        message: 'Вы действительно хотите закрыть пункт?',
-                        buttons: [
-                            {id: 'yes', type: 'destructive', text: '✅ Да, закрыть'},
-                            {id: 'no', type: 'default', text: '❌ Отмена'}
-                        ]
-                    }, function(btnId) {
-                        if(btnId === 'yes') {
-                            navigator.geolocation.getCurrentPosition(
-                                function(position) {
-                                    isCheckedIn = false;
-                                    checkinBtn.classList.remove('active');
-                                    checkinBtn.querySelector('.action-label').textContent = 'На пункте';
-                                    showAlert('Пункт успешно закрыт! Хорошего отдыха!');
-                                },
-                                function(error) {
-                                    showAlert('Ошибка: ' + error.message);
-                                }
-                            );
-                        }
-                    });
-                }
-            });
-            
-            // Кнопка выхода
-            document.querySelector('.logout-btn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
+            answerDiv.innerHTML = answers[faqSelect.value] || "Выберите вопрос из списка";
+        }
+        
+        // Кнопка "На пункте"
+        const checkinBtn = document.getElementById('checkinBtn');
+        let isCheckedIn = false;
+        
+        checkinBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!isCheckedIn) {
                 Telegram.WebApp.showPopup({
-                    title: 'Подтверждение выхода',
-                    message: 'Вы уверены, что хотите выйти?',
+                    title: 'Подтверждение',
+                    message: 'Разрешить доступ к вашему местоположению для отметки?',
                     buttons: [
-                        {id: 'yes', type: 'destructive', text: 'Выйти'},
-                        {id: 'no', type: 'cancel'}
+                        {id: 'yes', type: 'default', text: '✅ Разрешить'},
+                        {id: 'no', type: 'destructive', text: '❌ Отмена'}
                     ]
                 }, function(btnId) {
                     if(btnId === 'yes') {
-                        document.body.innerHTML = `
-                            <div style="text-align:center;padding:50px 20px">
-                                <h1>🚪 Вы вышли из системы</h1>
-                                <p>Для возврата обратитесь к администратору</p>
-                                <input type="text" id="accessCode" placeholder="Введите код доступа" 
-                                    style="padding:15px; margin:20px; width:80%; border-radius:15px">
-                                <button onclick="checkAccessCode()" 
-                                    style="padding:15px 30px; background:#4CAF50; color:white; border:none; border-radius:15px">
-                                    Войти
-                                </button>
-                            </div>
-                        `;
-                        
-                        window.checkAccessCode = function() {
-                            const code = document.getElementById('accessCode').value;
-                            if(code === "2024") {
-                                location.reload();
-                            } else {
-                                showAlert('Неверный код доступа!');
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                isCheckedIn = true;
+                                checkinBtn.classList.add('active');
+                                checkinBtn.querySelector('.action-label').textContent = 'Закрыть';
+                                showAlert('Вы успешно отметились на пункте!');
+                            },
+                            function(error) {
+                                showAlert('Ошибка: ' + error.message);
                             }
-                        }
+                        );
                     }
                 });
+            } else {
+                Telegram.WebApp.showPopup({
+                    title: 'Завершение смены',
+                    message: 'Вы действительно хотите закрыть пункт?',
+                    buttons: [
+                        {id: 'yes', type: 'destructive', text: '✅ Да, закрыть'},
+                        {id: 'no', type: 'default', text: '❌ Отмена'}
+                    ]
+                }, function(btnId) {
+                    if(btnId === 'yes') {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                isCheckedIn = false;
+                                checkinBtn.classList.remove('active');
+                                checkinBtn.querySelector('.action-label').textContent = 'На пункте';
+                                showAlert('Пункт успешно закрыт! Хорошего отдыха!');
+                            },
+                            function(error) {
+                                showAlert('Ошибка: ' + error.message);
+                            }
+                        );
+                    }
+                });
+            }
+        });
+        
+        // Кнопка выхода
+        document.querySelector('.logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            Telegram.WebApp.showPopup({
+                title: 'Подтверждение выхода',
+                message: 'Вы уверены, что хотите выйти?',
+                buttons: [
+                    {id: 'yes', type: 'destructive', text: 'Выйти'},
+                    {id: 'no', type: 'cancel'}
+                ]
+            }, function(btnId) {
+                if(btnId === 'yes') {
+                    document.body.innerHTML = `
+                        <div style="text-align:center;padding:50px 20px">
+                            <h1>🚪 Вы вышли из системы</h1>
+                            <p>Для возврата обратитесь к администратору</p>
+                            <input type="text" id="accessCode" placeholder="Введите код доступа" 
+                                style="padding:15px; margin:20px; width:80%; border-radius:15px">
+                            <button onclick="checkAccessCode()" 
+                                style="padding:15px 30px; background:#4CAF50; color:white; border:none; border-radius:15px">
+                                Войти
+                            </button>
+                        </div>
+                    `;
+                    
+                    window.checkAccessCode = function() {
+                        const code = document.getElementById('accessCode').value;
+                        if(code === "2024") {
+                            location.reload();
+                        } else {
+                            showAlert('Неверный код доступа!');
+                        }
+                    }
+                }
             });
-        }
-
-        // Запуск приложения после полной загрузки страницы
-        document.addEventListener('DOMContentLoaded', initApp);
+        });
     </script>
 </body>
 </html>
