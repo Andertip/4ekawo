@@ -1,1 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Команда</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff00ff 0%, #3300ff 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: -1;
+            border-radius: 30px;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-bottom: 15px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .user-info {
+            font-size: 18px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .team-list {
+            margin-top: 20px;
+        }
+        
+        .team-member {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .member-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .member-contacts {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .contact-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button class="back-btn" onclick="location.href='index.html'">←</button>
+        <div class="user-info">Наша команда</div>
+    </div>
+    
+    <div class="team-list">
+        <div class="team-member">
+            <div class="member-name">Марина (Управляющая)</div>
+            <div class="member-contacts">
+                <button class="contact-btn">📞 +7(999)123-45-67</button>
+                <button class="contact-btn">✉️ @marina_manager</button>
+            </div>
+        </div>
+        
+        <div class="team-member">
+            <div class="member-name">Алексей (Сменщик)</div>
+            <div class="member-contacts">
+                <button class="contact-btn">📞 +7(999)765-43-21</button>
+                <button class="contact-btn">✉️ @alexey_pvz</button>
+            </div>
+        </div>
+        
+        <div class="team-member">
+            <div class="member-name">Сергей (Директор)</div>
+            <div class="member-contacts">
+                <button class="contact-btn">📞 +7(999)555-44-33</button>
+                <button class="contact-btn">✉️ @director_sergey</button>
+            </div>
+        </div>
+        
+        <div class="team-member">
+            <div class="member-name">Техподдержка</div>
+            <div class="member-contacts">
+                <button class="contact-btn">📞 +7(800)123-45-67</button>
+                <button class="contact-btn">✉️ @pvz_support</button>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        
+        document.querySelectorAll('.contact-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(this.textContent.includes('@')) {
+                    const username = this.textContent.split('@')[1];
+                    Telegram.WebApp.openTelegramLink(`https://t.me/${username}`);
+                } else {
+                    const phone = this.textContent.match(/\+[\d()-]+/)[0];
+                    Telegram.WebApp.openLink(`tel:${phone}`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
