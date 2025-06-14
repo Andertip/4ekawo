@@ -546,5 +546,12 @@
             }
         }
     </script>
+    <script>
+  const redirect = sessionStorage.redirect;
+  if (redirect && redirect !== location.pathname) {
+    sessionStorage.removeItem('redirect');
+    history.replaceState(null, null, redirect);
+  }
+    </script>
 </body>
 </html>
