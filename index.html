@@ -1,1 +1,647 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Главный экран ПВЗ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff00ff 0%, #3300ff 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: -1;
+            border-radius: 30px;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-bottom: 15px;
+        }
+        
+        .user-info {
+            font-size: 16px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            max-width: 70%;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .glass-card {
+            background: rgba(173, 216, 230, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-header {
+            grid-column: span 7;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .day-name {
+            text-align: center;
+            font-size: 12px;
+            opacity: 0.8;
+            padding: 4px 0;
+        }
+        
+        .day {
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 50%;
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .day.workday::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: #00ff00;
+            border-radius: 50%;
+        }
+        
+        .day.current {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .notice-board {
+            background: #1a5e25;
+            border: 3px solid #5d4037;
+            border-radius: 10px;
+            padding: 12px;
+            position: relative;
+            font-family: 'Chalkboard', 'Comic Sans MS', cursive;
+            min-height: 120px;
+        }
+        
+        .notice-board::before {
+            content: '';
+            position: absolute;
+top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                transparent,
+                transparent 18px,
+                rgba(0,0,0,0.1) 20px
+            );
+            pointer-events: none;
+            border-radius: 7px;
+        }
+        
+        .notice-title {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #ff5555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .notice-content {
+            font-size: 16px;
+            line-height: 1.4;
+            color: white;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .notice-content .important {
+            color: #ff5555;
+            font-weight: bold;
+        }
+        
+        .clock-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .clock-display {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+            font-family: 'Digital', monospace;
+        }
+        
+        .date-display {
+            font-size: 16px;
+            opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(145deg, #6a5acd, #9370db);
+            border: none;
+            border-radius: 16px;
+            padding: 20px 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 
+                0 6px 12px rgba(0,0,0,0.2),
+                inset 0 -4px 8px rgba(0,0,0,0.3),
+                inset 0 4px 8px rgba(255,255,255,0.2);
+            position: relative;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255,255,255,0.3), 
+                rgba(255,255,255,0.1) 20%,
+                transparent
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
+        .action-btn:active {
+            box-shadow: 
+                0 2px 4px rgba(0,0,0,0.2),
+                inset 0 -2px 4px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.2);
+            transform: translateY(3px);
+        }
+        
+        .action-btn.active {
+            background: linear-gradient(145deg, #ff5555, #ff0000);
+        }
+        
+        .action-label {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        
+        .top-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-container {
+            flex: 2;
+        }
+        
+        .side-buttons {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .side-btn {
+            background: linear-gradient(145deg, #48c774, #00d1b2);
+border: none;
+            border-radius: 16px;
+            padding: 15px 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.2),
+                inset 0 -4px 8px rgba(0,0,0,0.3),
+                inset 0 4px 8px rgba(255,255,255,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .side-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255,255,255,0.3), 
+                rgba(255,255,255,0.1) 20%,
+                transparent
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
+        .side-btn-label {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        
+        /* Стили для зелёных уведомлений */
+        #custom-alert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; top: 0; }
+            to { opacity: 1; top: 20px; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; top: 20px; }
+            to { opacity: 0; top: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="user-info">Оператор ПВЗ: Иван Иванов</div>
+        <button class="logout-btn">🚪</button>
+    </div>
+    
+    <div class="top-container">
+        <div class="calendar-container glass-card">
+            <div class="calendar">
+                <div class="calendar-header">Июнь 2024</div>
+                <div class="day-name">Пн</div>
+                <div class="day-name">Вт</div>
+                <div class="day-name">Ср</div>
+                <div class="day-name">Чт</div>
+                <div class="day-name">Пт</div>
+                <div class="day-name">Сб</div>
+                <div class="day-name">Вс</div>
+                
+                <div class="day">27</div>
+                <div class="day">28</div>
+                <div class="day">29</div>
+                <div class="day">30</div>
+                <div class="day">31</div>
+                <div class="day">1</div>
+                <div class="day">2</div>
+                
+                <div class="day workday">3</div>
+                <div class="day workday">4</div>
+                <div class="day workday">5</div>
+                <div class="day workday">6</div>
+                <div class="day workday">7</div>
+                <div class="day">8</div>
+                <div class="day">9</div>
+                
+                <div class="day workday">10</div>
+                <div class="day workday">11</div>
+                <div class="day workday">12</div>
+                <div class="day workday">13</div>
+                <div class="day workday">14</div>
+                <div class="day">15</div>
+                <div class="day">16</div>
+                
+                <div class="day workday">17</div>
+                <div class="day workday">18</div>
+                <div class="day workday current">19</div>
+<div class="day workday">20</div>
+                <div class="day workday">21</div>
+                <div class="day">22</div>
+                <div class="day">23</div>
+            </div>
+        </div>
+        
+        <div class="side-buttons">
+            <button class="side-btn" id="sosBtn">
+                🆘
+                <span class="side-btn-label">SOS</span>
+            </button>
+            <button class="side-btn" id="reportsBtn">
+                📈
+                <span class="side-btn-label">Отчёты</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <div class="notice-board">
+            <div class="notice-title">Важные объявления</div>
+            <div class="notice-content">
+                • Завтра <span class="important">инвентаризация</span> на всех ПВЗ Ozon<br>
+                • Wildberries: новые правила упаковки с 1 июля<br>
+                • <span class="important">Срочно!</span> ПВЗ Ozon-15: заканчиваются пакеты<br>
+                • Обучение для новых операторов в пятницу
+            </div>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <div class="clock-widget">
+            <div class="clock-display" id="clock">10:45:27</div>
+            <div class="date-display" id="date">26 июня 2024</div>
+        </div>
+    </div>
+    
+    <div class="actions-grid">
+        <button class="action-btn" id="checkinBtn">
+            📍
+            <span class="action-label">На пункте</span>
+        </button>
+        
+        <button class="action-btn" id="chatBtn">
+            💬
+            <span class="action-label">Чат</span>
+        </button>
+        
+        <button class="action-btn" id="helpBtn">
+            ❓
+            <span class="action-label">Помощь</span>
+        </button>
+        
+        <button class="action-btn" id="suppliesBtn">
+            📦
+            <span class="action-label">Расходники</span>
+        </button>
+        
+        <button class="action-btn" id="teamBtn">
+            👥
+            <span class="action-label">Команда</span>
+        </button>
+        
+        <button class="action-btn" id="settingsBtn">
+            ⚙️
+            <span class="action-label">Настройки</span>
+        </button>
+    </div>
 
+    <script>
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('ru-RU');
+            const date = now.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            document.getElementById('clock').textContent = time;
+            document.getElementById('date').textContent = date;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Функция для показа зелёных сообщений
+        function showAlert(message) {
+            // Убираем старые сообщения если есть
+            const oldAlert = document.getElementById('custom-alert');
+            if(oldAlert) oldAlert.remove();
+            
+            // Создаем красивое сообщение
+            const alertBox = document.createElement('div');
+            alertBox.id = 'custom-alert';
+            alertBox.textContent = message;
+            alertBox.style.cssText = 
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #4CAF50;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 5px;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: fadeIn 0.3s;
+            ;
+document.body.appendChild(alertBox);
+            
+            // Автоматически скрываем через 2 секунды
+            setTimeout(() => {
+                alertBox.style.animation = 'fadeOut 0.5s';
+                setTimeout(() => alertBox.remove(), 500);
+            }, 2000);
+        }
+        
+        // Обработчики для всех кнопок
+        document.getElementById('sosBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showAlert('SOS активирован! Помощь уже в пути!');
+        });
+        
+        document.getElementById('reportsBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showAlert('Отчёты загружаются...');
+        });
+        
+        document.getElementById('chatBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showAlert('Чат с поддержкой открывается...');
+        });
+        
+        document.getElementById('helpBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showAlert('Раздел помощи открывается...');
+        });
+        
+        document.getElementById('suppliesBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showAlert('Учёт расходников открывается...');
+        });
+        
+        document.getElementById('teamBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showAlert('Информация о команде загружается...');
+        });
+        
+        document.getElementById('settingsBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showAlert('Настройки открываются...');
+        });
+        
+        // Кнопка "На пункте"
+        const checkinBtn = document.getElementById('checkinBtn');
+        let isCheckedIn = false;
+        
+        checkinBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!isCheckedIn) {
+                Telegram.WebApp.showPopup({
+                    title: 'Подтверждение',
+                    message: 'Разрешить доступ к вашему местоположению для отметки?',
+                    buttons: [
+                        {id: 'yes', type: 'default', text: '✅ Разрешить'},
+                        {id: 'no', type: 'destructive', text: '❌ Отмена'}
+                    ]
+                }, function(btnId) {
+                    if(btnId === 'yes') {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                isCheckedIn = true;
+                                checkinBtn.classList.add('active');
+                                checkinBtn.querySelector('.action-label').textContent = 'Закрыть';
+                                showAlert('Вы успешно отметились на пункте!');
+                            },
+                            function(error) {
+                                showAlert('Ошибка: ' + error.message);
+                            }
+                        );
+                    }
+                });
+            } else {
+                Telegram.WebApp.showPopup({
+                    title: 'Завершение смены',
+                    message: 'Вы действительно хотите закрыть пункт?',
+                    buttons: [
+                        {id: 'yes', type: 'destructive', text: '✅ Да, закрыть'},
+                        {id: 'no', type: 'default', text: '❌ Отмена'}
+                    ]
+                }, function(btnId) {
+                    if(btnId === 'yes') {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                isCheckedIn = false;
+                                checkinBtn.classList.remove('active');
+                                checkinBtn.querySelector('.action-label').textContent = 'На пункте';
+showAlert('Пункт успешно закрыт! Хорошего отдыха!');
+                            },
+                            function(error) {
+                                showAlert('Ошибка: ' + error.message);
+                            }
+                        );
+                    }
+                });
+            }
+        });
+        
+        // Кнопка выхода
+        document.querySelector('.logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            Telegram.WebApp.showPopup({
+                title: 'Подтверждение выхода',
+                message: 'Вы уверены, что хотите выйти?',
+                buttons: [
+                    {id: 'yes', type: 'destructive', text: 'Выйти'},
+                    {id: 'no', type: 'cancel'}
+                ]
+            }, function(btnId) {
+                if(btnId === 'yes') {
+                    document.body.innerHTML = 
+                        <div style="text-align:center;padding:50px 20px">
+                            <h1>🚪 Вы вышли из системы</h1>
+                            <p>Для возврата обратитесь к администратору</p>
+                            <input type="text" id="accessCode" placeholder="Введите код доступа" 
+                                style="padding:15px; margin:20px; width:80%; border-radius:15px">
+                            <button onclick="checkAccessCode()" 
+                                style="padding:15px 30px; background:#4CAF50; color:white; border:none; border-radius:15px">
+                                Войти
+                            </button>
+                        </div>
+                    ;
+                    
+                    window.checkAccessCode = function() {
+                        const code = document.getElementById('accessCode').value;
+                        if(code === "2024") {
+                            location.reload();
+                        } else {
+                            showAlert('Неверный код доступа!');
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
